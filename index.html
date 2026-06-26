@@ -77,6 +77,18 @@ body{font-family:Inter,sans-serif;background:linear-gradient(135deg,#0f0f0e,#1a1
 <main class="main">
 
 <div id="sec-meta">
+
+<div id="sec-import" style="margin-bottom:24px;border:1px solid #2a2820;border-radius:12px;padding:20px;background:#0a0a09">
+  <div style="color:#C9A84C;font-size:10px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;margin-bottom:10px">PDF automatisch einlesen</div>
+  <div style="color:#6B6B6B;font-size:12px;margin-bottom:14px">Lade dein bestehendes Expos&eacute; oder eine Objektbeschreibung hoch &mdash; die KI liest alle Daten aus und f&uuml;llt das Formular automatisch.</div>
+  <div id="pdf-drop-zone" onclick="document.getElementById('pdf-file-in').click()" style="border:2px dashed #2a2820;border-radius:9px;padding:20px;text-align:center;cursor:pointer;transition:all .2s">
+    <input type="file" id="pdf-file-in" accept=".pdf,image/*" style="display:none" onchange="importFromFile(event)">
+    <div style="font-size:22px;margin-bottom:6px">&#128196;</div>
+    <div style="color:#FAFAF8;font-weight:600;font-size:13px;margin-bottom:3px">PDF oder Bild hochladen</div>
+    <div style="color:#6B6B6B;font-size:11px">PDF, JPG, PNG &mdash; Expos&eacute;, Beschreibung, Scan</div>
+  </div>
+  <div id="import-status" style="font-size:11px;text-align:center;margin-top:10px;min-height:16px;color:#C9A84C"></div>
+</div>
   <div class="sec-title">Objektdaten</div><div class="sec-sub">Grundinformationen zum Objekt</div>
   <div class="g2">
     <div class="field"><label>Objektart</label>
@@ -304,6 +316,103 @@ async function genLage(){
 }
 
 // ─── PDF Generation - Exact Falkenhagen Style ───
+
+async function importFromFile(e){
+  const file = e.target.files[0];
+  if(!file) return;
+  const status = document.getElementById('import-status');
+  const zone = document.getElementById('pdf-drop-zone');
+  status.textContent = 'KI liest Dokument...';
+  status.style.color = '#C9A84C';
+  zone.style.borderColor = '#C9A84C';
+
+  try{
+    // Convert to base64
+    const b64 = await new Promise((res,rej)=>{
+      const fr = new FileReader();
+      fr.onload = ev => res(ev.target.result.split(',')[1]);
+      fr.onerror = rej;
+      fr.readAsDataURL(file);
+    });
+
+    const isPDF = file.type === 'application/pdf' || file.name.endsWith('.pdf');
+    const mediaType = isPDF ? 'application/pdf' : (file.type || 'image/jpeg');
+
+    // Call API with vision
+    const r = await fetch('/api/extract', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({b64, mediaType, isPDF})
+    });
+    if(!r.ok) throw new Error('API Fehler '+r.status);
+    const data = await r.json();
+
+    // Fill form
+    if(data.typ) document.getElementById('f-typ').value = data.typ;
+    if(data.ref) document.getElementById('f-ref').value = data.ref;
+    if(data.titel) document.getElementById('f-titel').value = data.titel;
+    if(data.sub) document.getElementById('f-sub').value = data.sub;
+    if(data.adr) document.getElementById('f-adr').value = data.adr;
+    if(data.fl) document.getElementById('f-fl').value = data.fl;
+    if(data.gr) document.getElementById('f-gr').value = data.gr;
+    if(data.zi) document.getElementById('f-zi').value = data.zi;
+    if(data.bj) document.getElementById('f-bj').value = data.bj;
+    if(data.hz) document.getElementById('f-hz').value = data.hz;
+    if(data.vf) document.getElementById('f-vf').value = data.vf;
+    if(data.zustand) document.getElementById('f-zustand').value = data.zustand;
+    if(data.au) document.getElementById('f-au').value = data.au;
+    if(data.empf) document.getElementById('f-empf').value = data.empf;
+    if(data.footref) document.getElementById('f-footref').value = data.footref;
+    if(data.letter) document.getElementById('f-letter').value = data.letter;
+    if(data.quote) document.getElementById('f-quote').value = data.quote;
+    if(data.descTitle) document.getElementById('f-desc-title').value = data.descTitle;
+    if(data.desc) document.getElementById('f-desc').value = data.desc;
+    if(data.lageTitle) document.getElementById('f-lage-title').value = data.lageTitle;
+    if(data.lage) document.getElementById('f-lage').value = data.lage;
+    if(data.lageTags) document.getElementById('f-lage-tags').value = data.lageTags;
+    if(data.ep) document.getElementById('f-ep').value = data.ep;
+    if(data.ko) document.getElementById('f-ko').value = data.ko;
+    if(data.fakt) document.getElementById('f-fakt').value = data.fakt;
+    if(data.strat) document.getElementById('f-strat').value = data.strat;
+    if(data.kz1) document.getElementById('f-kz1').value = data.kz1;
+    if(data.kz1l) document.getElementById('f-kz1l').value = data.kz1l;
+    if(data.kz2) document.getElementById('f-kz2').value = data.kz2;
+    if(data.kz2l) document.getElementById('f-kz2l').value = data.kz2l;
+    if(data.kz3) document.getElementById('f-kz3').value = data.kz3;
+    if(data.kz3l) document.getElementById('f-kz3l').value = data.kz3l;
+    if(data.wert) document.getElementById('f-wert').value = data.wert;
+    if(data.disc) document.getElementById('f-disc').value = data.disc;
+    // Highlights
+    if(data.hl && Array.isArray(data.hl)){
+      data.hl.slice(0,6).forEach((h,i)=>{
+        if(document.getElementById('ht'+i)) document.getElementById('ht'+i).value = h.t||'';
+        if(document.getElementById('hd'+i)) document.getElementById('hd'+i).value = h.d||'';
+      });
+    }
+    // Table rows
+    if(data.trows && Array.isArray(data.trows)){
+      data.trows.forEach((row,i)=>{
+        if(i>0) addTableRow();
+        setTimeout(()=>{
+          if(document.getElementById('tp'+i)) document.getElementById('tp'+i).value = row.p||'';
+          if(document.getElementById('tf'+i)) document.getElementById('tf'+i).value = row.f||'';
+          if(document.getElementById('tr'+i)) document.getElementById('tr'+i).value = row.r||'';
+        }, 100);
+      });
+    }
+
+    status.textContent = 'Alle Felder wurden automatisch ausgefullt!';
+    status.style.color = '#5cb85c';
+    zone.style.borderColor = '#5cb85c';
+    // Scroll to form
+    document.getElementById('f-titel').scrollIntoView({behavior:'smooth',block:'center'});
+  } catch(err){
+    status.textContent = 'Fehler: ' + err.message;
+    status.style.color = '#e05c5c';
+    zone.style.borderColor = '#e05c5c';
+  }
+}
+
 async function generatePDF(){
   const btn=document.getElementById('btn-gen');btn.disabled=true;st('PDF wird erstellt...');
   try{
