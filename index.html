@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Amili Immobilien - Expose Generator</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 body{font-family:Inter,sans-serif;background:linear-gradient(135deg,#0f0f0e,#1a1712);min-height:100vh}
@@ -24,7 +24,7 @@ body{font-family:Inter,sans-serif;background:linear-gradient(135deg,#0f0f0e,#1a1
 .btn-gen:hover{transform:translateY(-1px);box-shadow:0 6px 24px rgba(201,168,76,.3)}
 .btn-gen:disabled{opacity:.5;cursor:not-allowed;transform:none}
 .gen-st{font-size:11px;text-align:center;margin-top:8px;min-height:16px;color:#C9A84C}
-.gen-st.ok{color:#5cb85c}.gen-st.err{color:#e05c5c}
+.gen-st.ok{color:#5cb85c}.gen-st.err{color:#e05c5c;font-size:10px}
 .main{margin-left:220px;flex:1;padding:40px 48px;max-width:820px}
 .sec-title{font-family:'Playfair Display',serif;font-size:26px;font-weight:500;color:#FAFAF8;margin-bottom:4px}
 .sec-sub{font-size:13px;color:#6B6B6B;margin-bottom:28px}
@@ -85,87 +85,79 @@ body{font-family:Inter,sans-serif;background:linear-gradient(135deg,#0f0f0e,#1a1
     <div class="field"><label>Ref.-Nr.</label><input id="f-ref" value="AMI-2025-001"></div>
   </div>
   <div class="field"><label>Expos&eacute;-Titel</label><input id="f-titel" placeholder="Ein Zuhause zum Verlieben."></div>
-  <div class="field"><label>Untertitel</label><input id="f-sub" placeholder="Charmantes Haus mit Garten &amp; Pool"></div>
-  <div class="field"><label>Adresse</label><input id="f-adr" placeholder="Bernitzower Weg 4b &middot; 14641 Nauen (OT Lietzow)"></div>
+  <div class="field"><label>Untertitel</label><input id="f-sub" placeholder="Charmantes Haus mit Garten und Pool"></div>
+  <div class="field"><label>Adresse</label><input id="f-adr" placeholder="Bernitzower Weg 4b, 14641 Nauen"></div>
   <div class="g3">
-    <div class="field"><label>Wohnfl&auml;che (m&sup2;)</label><input id="f-fl" placeholder="105"></div>
-    <div class="field"><label>Grundst&uuml;ck (m&sup2;)</label><input id="f-gr" placeholder="400"></div>
-    <div class="field"><label>Zimmer</label><input id="f-zi" placeholder="3 (opt. 4)"></div>
+    <div class="field"><label>Wohnfl&auml;che m&sup2;</label><input id="f-fl" placeholder="105"></div>
+    <div class="field"><label>Grundst&uuml;ck m&sup2;</label><input id="f-gr" placeholder="400"></div>
+    <div class="field"><label>Zimmer</label><input id="f-zi" placeholder="3"></div>
   </div>
   <div class="g3">
     <div class="field"><label>Baujahr</label><input id="f-bj" placeholder="1954"></div>
     <div class="field"><label>Heizung</label><input id="f-hz" placeholder="Gas + Kachelofen"></div>
     <div class="field"><label>Verf&uuml;gbarkeit</label><input id="f-vf" value="Kurzfristig"></div>
   </div>
-  <div class="field"><label>Au&szlig;enanlage / Besonderheiten</label><input id="f-au" placeholder="Pool &middot; Garten &middot; Terrasse &middot; Carport"></div>
+  <div class="field"><label>Au&szlig;enanlage</label><input id="f-au" placeholder="Pool, Garten, Terrasse, Carport"></div>
   <div class="divider"></div>
   <div class="sub-lbl">Agent</div>
   <div class="g2">
     <div class="field"><label>Name</label><input id="f-ag" value="Saru Siva"></div>
     <div class="field"><label>E-Mail</label><input id="f-em" value="saru.siva@amili-immo.de"></div>
     <div class="field"><label>Telefon</label><input id="f-tel" value="+49 176 4929 4590"></div>
-    <div class="field"><label>Empf&auml;nger (Eigentuemer)</label><input id="f-empf" placeholder="Frau Gabi Levecke"></div>
+    <div class="field"><label>Empf&auml;nger</label><input id="f-empf" placeholder="Frau Gabi Levecke"></div>
   </div>
 </div>
 
 <div id="sec-letter" style="display:none">
-  <div class="sec-title">Anschreiben</div><div class="sec-sub">Pers&ouml;nlicher Brief &mdash; KI generiert, du bearbeitest</div>
+  <div class="sec-title">Anschreiben</div><div class="sec-sub">Pers&ouml;nlicher Brief - KI generiert, du bearbeitest</div>
   <button class="btn-ai" id="btn-letter" onclick="genLetter()">&#x2726; Mit KI generieren</button>
-  <div class="field"><label>Brief-Text (bearbeitbar)</label>
-    <textarea id="f-letter" style="min-height:260px" placeholder="Klicke auf KI generieren oder schreibe direkt hier..."></textarea>
-  </div>
+  <div class="field"><label>Brief-Text</label><textarea id="f-letter" style="min-height:260px" placeholder="KI generieren oder direkt schreiben..."></textarea></div>
 </div>
 
 <div id="sec-desc" style="display:none">
   <div class="sec-title">Beschreibung &amp; Highlights</div><div class="sec-sub">Objektbeschreibung und bis zu 6 Highlights</div>
-  <button class="btn-ai" id="btn-desc" onclick="genDesc()">&#x2726; Beschreibung mit KI generieren</button>
-  <div class="field"><label>Objektbeschreibung (bearbeitbar)</label>
-    <textarea id="f-desc" style="min-height:160px" placeholder="KI generiert oder direkt eingeben..."></textarea>
-  </div>
+  <button class="btn-ai" id="btn-desc" onclick="genDesc()">&#x2726; Mit KI generieren</button>
+  <div class="field"><label>Objektbeschreibung</label><textarea id="f-desc" style="min-height:160px" placeholder="KI generieren oder direkt schreiben..."></textarea></div>
   <div class="divider"></div>
   <div class="sub-lbl">Die Highlights (max. 6)</div>
   <div id="hl-wrap"></div>
 </div>
 
 <div id="sec-photos" style="display:none">
-  <div class="sec-title">Fotos</div><div class="sec-sub">Bis zu 12 Fotos &mdash; das erste wird zum Cover</div>
+  <div class="sec-title">Fotos</div><div class="sec-sub">Bis zu 12 Fotos - das erste wird zum Cover</div>
   <div class="upload-zone" onclick="document.getElementById('file-in').click()">
     <input type="file" id="file-in" multiple accept="image/*" style="display:none" onchange="handlePhotos(event)">
     <div style="font-size:28px;margin-bottom:8px">&#128444;</div>
     <div style="color:#FAFAF8;font-weight:600;margin-bottom:4px">Fotos hochladen</div>
-    <div style="color:#6B6B6B;font-size:12px">JPG, PNG, WEBP &mdash; mehrere auf einmal m&ouml;glich</div>
+    <div style="color:#6B6B6B;font-size:12px">JPG, PNG, WEBP</div>
   </div>
   <div class="photo-grid" id="photo-grid"></div>
 </div>
 
 <div id="sec-lage" style="display:none">
-  <div class="sec-title">Lage</div><div class="sec-sub">Lagebeschreibung und Umfeld</div>
-  <div class="field"><label>Besonderheiten (f&uuml;r KI)</label>
-    <input id="f-li" placeholder="Havelland, Regionalbahn Berlin, Schulen, Natur...">
-  </div>
-  <button class="btn-ai" id="btn-lage" onclick="genLage()">&#x2726; Lage-Text mit KI generieren</button>
-  <div class="field"><label>Lage-Text (bearbeitbar)</label>
-    <textarea id="f-lage" style="min-height:140px" placeholder="KI generiert oder direkt eingeben..."></textarea>
-  </div>
+  <div class="sec-title">Lage</div><div class="sec-sub">Lagebeschreibung</div>
+  <div class="field"><label>Besonderheiten</label><input id="f-li" placeholder="Havelland, Regionalbahn Berlin, Schulen..."></div>
+  <button class="btn-ai" id="btn-lage" onclick="genLage()">&#x2726; Mit KI generieren</button>
+  <div class="field"><label>Lage-Text</label><textarea id="f-lage" style="min-height:140px" placeholder="KI generieren oder direkt schreiben..."></textarea></div>
 </div>
 
 <div id="sec-markt" style="display:none">
   <div class="sec-title">Markteinsch&auml;tzung</div><div class="sec-sub">Preisquellen und Empfehlung</div>
   <div class="sub-lbl">Vergleichspreise</div>
-  <div class="g2"><div class="field"><label>Preis 1 (&euro;/m&sup2;)</label><input id="f-p1" placeholder="2.722"></div><div class="field"><label>Quelle 1</label><input id="f-s1" value="Immowelt"></div></div>
-  <div class="g2"><div class="field"><label>Preis 2 (&euro;/m&sup2;)</label><input id="f-p2" placeholder="3.063"></div><div class="field"><label>Quelle 2</label><input id="f-s2" value="ImmobilienScout24"></div></div>
-  <div class="g2"><div class="field"><label>Preis 3 (&euro;/m&sup2;)</label><input id="f-p3" placeholder="3.249"></div><div class="field"><label>Quelle 3</label><input id="f-s3" value="Engel &amp; V&ouml;lkers"></div></div>
+  <div class="g2"><div class="field"><label>Preis 1 (EUR/m&sup2;)</label><input id="f-p1" placeholder="2.722"></div><div class="field"><label>Quelle 1</label><input id="f-s1" value="Immowelt"></div></div>
+  <div class="g2"><div class="field"><label>Preis 2 (EUR/m&sup2;)</label><input id="f-p2" placeholder="3.063"></div><div class="field"><label>Quelle 2</label><input id="f-s2" value="ImmobilienScout24"></div></div>
+  <div class="g2"><div class="field"><label>Preis 3 (EUR/m&sup2;)</label><input id="f-p3" placeholder="3.249"></div><div class="field"><label>Quelle 3</label><input id="f-s3" value="Engel und Voelkers"></div></div>
   <div class="divider"></div>
-  <div class="field"><label>Empfohlener Angebotspreis</label><input id="f-ep" placeholder="319.000 &euro;"></div>
-  <div class="field"><label>Marktwert-Korridor</label><input id="f-ko" placeholder="ca. 290.000 - 325.000 &euro;"></div>
-  <div class="field"><label>Zielkorridor Verkauf</label><input id="f-zi2" placeholder="295.000 - 315.000 &euro;"></div>
+  <div class="field"><label>Empfohlener Angebotspreis</label><input id="f-ep" placeholder="319.000 EUR"></div>
+  <div class="field"><label>Marktwert-Korridor</label><input id="f-ko" placeholder="ca. 290.000 - 325.000 EUR"></div>
+  <div class="field"><label>Zielkorridor Verkauf</label><input id="f-zi2" placeholder="295.000 - 315.000 EUR"></div>
 </div>
 
 </main></div>
+
 <script>
-const LOGO='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';
-const G=[201,168,76],D=[15,15,14],IV=[250,250,248],SL=[107,107,107],
-      WH=[255,255,255],NV=[24,23,20],BD=[228,228,223];
+// ── INIT ──
+const LOGO_B64 = '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';
 
 (function(){
   let h='';
@@ -205,18 +197,19 @@ function renderPhotos(){
 function rp(i){pF.splice(i,1);pP.splice(i,1);renderPhotos();}
 function mv(i,d){const j=i+d;if(j<0||j>=pF.length)return;[pF[i],pF[j]]=[pF[j],pF[i]];[pP[i],pP[j]]=[pP[j],pP[i]];renderPhotos();}
 
+function gv(id){return(document.getElementById(id)?.value||'').trim();}
 function gf(){return{
-  typ:g('f-typ'),ref:g('f-ref'),titel:g('f-titel'),sub:g('f-sub'),
-  adr:g('f-adr'),fl:g('f-fl'),gr:g('f-gr'),zi:g('f-zi'),
-  bj:g('f-bj'),hz:g('f-hz'),vf:g('f-vf'),au:g('f-au'),
-  ag:g('f-ag'),em:g('f-em'),tel:g('f-tel'),empf:g('f-empf'),
-  let:g('f-letter'),desc:g('f-desc'),
-  li:g('f-li'),lage:g('f-lage'),
-  p1:g('f-p1'),s1:g('f-s1'),p2:g('f-p2'),s2:g('f-s2'),p3:g('f-p3'),s3:g('f-s3'),
-  ep:g('f-ep'),ko:g('f-ko'),zi2:g('f-zi2'),
-  hl:Array.from({length:6},(_,i)=>({t:g('ht'+i),d:g('hd'+i)})).filter(h=>h.t||h.d)
+  typ:gv('f-typ'),ref:gv('f-ref'),titel:gv('f-titel'),sub:gv('f-sub'),
+  adr:gv('f-adr'),fl:gv('f-fl'),gr:gv('f-gr'),zi:gv('f-zi'),
+  bj:gv('f-bj'),hz:gv('f-hz'),vf:gv('f-vf'),au:gv('f-au'),
+  ag:gv('f-ag'),em:gv('f-em'),tel:gv('f-tel'),empf:gv('f-empf'),
+  let:gv('f-letter'),desc:gv('f-desc'),
+  li:gv('f-li'),lage:gv('f-lage'),
+  p1:gv('f-p1'),s1:gv('f-s1'),p2:gv('f-p2'),s2:gv('f-s2'),p3:gv('f-p3'),s3:gv('f-s3'),
+  ep:gv('f-ep'),ko:gv('f-ko'),zi2:gv('f-zi2'),
+  hl:Array.from({length:6},(_,i)=>({t:gv('ht'+i),d:gv('hd'+i)})).filter(h=>h.t||h.d)
 };}
-function g(id){return document.getElementById(id)?.value||'';}
+
 function st(msg,cls){const e=document.getElementById('gen-st');e.textContent=msg;e.className='gen-st'+(cls?' '+cls:'');}
 
 async function callAI(prompt){
@@ -226,251 +219,395 @@ async function callAI(prompt){
 }
 
 async function genLetter(){
-  const b=document.getElementById('btn-letter');b.disabled=true;st('KI schreibt Brief...');
-  try{const f=gf();const t=await callAI('Du bist '+f.ag+' von Amili Immobilien Berlin. Schreibe einen persoenlichen Brief (max 180 Woerter, Deutsch) an '+(f.empf||'die Eigentuemerin')+' fuer das Objekt: '+(f.titel||f.adr)+'. Hebe Mehrwert von Amili hervor. Nur Fliestext ohne Anrede/Grussformel.');document.getElementById('f-letter').value=t;st('Fertig','ok');}
-  catch(e){st('Fehler: '+e.message,'err');}b.disabled=false;
+  const b=document.getElementById('btn-letter');b.disabled=true;st('KI schreibt...');
+  try{const f=gf();const t=await callAI('Du bist '+f.ag+' von Amili Immobilien Berlin. Schreibe einen persoenlichen Brief max 180 Woerter Deutsch an '+(f.empf||'die Eigentuemerin')+' fuer das Objekt '+(f.titel||f.adr)+'. Hebe Mehrwert von Amili hervor. Nur Fliestext.');document.getElementById('f-letter').value=t;st('Fertig','ok');}
+  catch(e){st(e.message,'err');}b.disabled=false;
 }
 async function genDesc(){
-  const b=document.getElementById('btn-desc');b.disabled=true;st('KI schreibt Beschreibung...');
-  try{const f=gf();const t=await callAI('Schreibe eine emotionale Objektbeschreibung (max 150 Woerter, Deutsch) fuer: '+(f.titel||f.adr)+'. Typ: '+f.typ+', Flaeche: '+f.fl+'m2, Zimmer: '+f.zi+', Baujahr: '+f.bj+', Besonderheiten: '+f.au+'. Ton: warm, fuer Familien. Nur Fliestext.');document.getElementById('f-desc').value=t;st('Fertig','ok');}
-  catch(e){st('Fehler: '+e.message,'err');}b.disabled=false;
+  const b=document.getElementById('btn-desc');b.disabled=true;st('KI schreibt...');
+  try{const f=gf();const t=await callAI('Schreibe eine emotionale Objektbeschreibung max 150 Woerter Deutsch fuer '+f.typ+' '+f.adr+'. Flaeche '+f.fl+'m2, Zimmer '+f.zi+', Baujahr '+f.bj+', Besonderheiten '+f.au+'. Nur Fliestext.');document.getElementById('f-desc').value=t;st('Fertig','ok');}
+  catch(e){st(e.message,'err');}b.disabled=false;
 }
 async function genLage(){
-  const b=document.getElementById('btn-lage');b.disabled=true;st('KI schreibt Lage-Text...');
-  try{const f=gf();const t=await callAI('Schreibe einen Lage-Text (max 100 Woerter, Deutsch) fuer: '+f.adr+'. Besonderheiten: '+(f.li||'ruhige Wohnlage')+'. Zielgruppe: Familien. Betone Natur und Anbindung. Nur Fliestext.');document.getElementById('f-lage').value=t;st('Fertig','ok');}
-  catch(e){st('Fehler: '+e.message,'err');}b.disabled=false;
+  const b=document.getElementById('btn-lage');b.disabled=true;st('KI schreibt...');
+  try{const f=gf();const t=await callAI('Schreibe Lage-Text max 100 Woerter Deutsch fuer '+f.adr+'. Besonderheiten: '+(f.li||'ruhige Wohnlage')+'. Zielgruppe Familien. Nur Fliestext.');document.getElementById('f-lage').value=t;st('Fertig','ok');}
+  catch(e){st(e.message,'err');}b.disabled=false;
 }
 
+// ── PDF mit pdf-lib ──
 async function generatePDF(){
-  const btn=document.getElementById('btn-gen');btn.disabled=true;st('PDF wird erstellt...');
+  const btn=document.getElementById('btn-gen');
+  btn.disabled=true;st('PDF wird erstellt...');
   try{
+    const {PDFDocument,rgb,StandardFonts,PageSizes}=PDFLib;
     const f=gf();
-    const {jsPDF}=window.jspdf;
-    const doc=new jsPDF({unit:'mm',format:'a4'});
-    const W=210,H=297;
-    const G=[201,168,76],D=[15,15,14],IV=[250,250,248],SL=[107,107,107],
-          WH=[255,255,255],NV=[24,23,20],BD=[228,228,223];
-    const sf=(a,b,c)=>doc.setFillColor(a,b,c);
-    const ss=(a,b,c)=>doc.setDrawColor(a,b,c);
-    const tc=(a,b,c)=>doc.setTextColor(a,b,c);
-    const fn=(sz,w,fam)=>{doc.setFont(fam||'helvetica',w||'normal');doc.setFontSize(sz);};
-    const wp=(t,mw,sz)=>{fn(sz||10);return doc.splitTextToSize(String(t||''),mw);};
-    const tx=(t,x,y,opt)=>{const s=String(t||'');try{opt?doc.text(s,x,y,opt):doc.text(s,x,y);}catch(e){}};
+    const pdfDoc=await PDFDocument.create();
 
-    function hdr(lbl){
-      sf(...WH);doc.rect(0,0,W,22,'F');
-      try{doc.addImage('data:image/png;base64,'+LOGO,'PNG',10,4,22,13,'','FAST');}catch(e){}
-      tc(...G);fn(11,'bold');tx('AMILI',35,11);
-      tc(...D);fn(11,'normal');tx('IMMOBILIEN',49,11);
-      if(lbl){tc(...SL);fn(7,'bold');doc.text(String(lbl||'').toUpperCase(),W-10,11,null,null,'right');}
-      ss(...BD);doc.setLineWidth(0.3);doc.line(10,22,W-10,22);
+    // Fonts
+    const fontR=await pdfDoc.embedFont(StandardFonts.Helvetica);
+    const fontB=await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+    const fontI=await pdfDoc.embedFont(StandardFonts.HelveticaOblique);
+
+    // Colors
+    const GOLD=rgb(0.788,0.659,0.298);
+    const DARK=rgb(0.059,0.059,0.055);
+    const SLATE=rgb(0.42,0.42,0.42);
+    const WHITE=rgb(1,1,1);
+    const IVORY=rgb(0.98,0.98,0.973);
+    const NAVY=rgb(0.094,0.09,0.078);
+    const LGRAY=rgb(0.89,0.89,0.87);
+
+    const PW=595, PH=842; // A4 in points
+
+    // Helper: draw text with font
+    function txt(page, text, x, y, size, font, color, maxW){
+      const s=String(text||'');
+      if(!s)return;
+      // Truncate if maxW specified
+      let display=s;
+      if(maxW){
+        while(display.length>0 && font.widthOfTextAtSize(display,size)>maxW){
+          display=display.slice(0,-1);
+        }
+      }
+      page.drawText(display,{x,y,size,font,color:color||DARK});
     }
-    function ftr(){
-      sf(...NV);doc.rect(0,H-12,W,12,'F');
-      tc(85,85,85);fn(7);tx('Amili Immobilien \u00b7 Berlin & Brandenburg',10,H-5);
-      tc(...G);fn(7,'bold');doc.text(String('Vorab-Expos\u00e9 \u00b7 '+String(f.adr||'')||''),W-10,H-5,null,null,'right');
+
+    // Helper: wrap text into lines
+    function wrapLines(text, maxW, size, font){
+      const words=String(text||'').split(' ');
+      const lines=[];
+      let cur='';
+      for(const w of words){
+        const test=cur?cur+' '+w:w;
+        if(font.widthOfTextAtSize(test,size)<=maxW){cur=test;}
+        else{if(cur)lines.push(cur);cur=w;}
+      }
+      if(cur)lines.push(cur);
+      return lines;
     }
 
-    // COVER
-    if(pP.length>0){
-      doc.addImage(pP[0],'JPEG',0,0,W,H,'','FAST');
-      sf(0,0,0);doc.setGState(doc.GState({opacity:0.58}));doc.rect(0,H*0.44,W,H*0.56,'F');doc.setGState(doc.GState({opacity:1}));
-    }else{sf(...NV);doc.rect(0,0,W,H,'F');}
-    sf(...WH);doc.setGState(doc.GState({opacity:.92}));doc.roundedRect(8,8,32,19,2,2,'F');doc.setGState(doc.GState({opacity:1}));
-    try{doc.addImage('data:image/png;base64,'+LOGO,'PNG',10,10,28,15,'','FAST');}catch(e){}
-    const cy0=H*0.47;
-    tc(...G);fn(7,'bold');tx('VORAB-EXPOS\u00c9 \u00b7 VERTRAULICHE MARKTEINSCH\u00c4TZUNG',12,cy0);
-    tc(...WH);fn(28,'bold','times');
-    const tl=doc.splitTextToSize(String(f.titel||'Ein Zuhause zum Verlieben.'),175);
-    doc.text(tl,12,cy0+9);fn(10,'normal','helvetica');
-    const ul=doc.splitTextToSize(String(f.sub||''),170);
-    if(ul&&ul[0]&&ul[0].length>0)doc.text(ul,12,cy0+tl.length*10+10);
-    const ay=cy0+tl.length*10+((ul&&ul[0]&&ul[0].length)?ul.length*6+14:10);
-    sf(...WH);doc.setGState(doc.GState({opacity:.15}));doc.roundedRect(10,ay,W-20,10,2,2,'F');doc.setGState(doc.GState({opacity:1}));
-    tc(...WH);fn(9);tx(String(f.adr||''),14,ay+7);
-    tc(170,170,170);fn(8);tx('Erstellt fuer '+String(f.empf||''),10,H-11);
-    tc(130,130,130);doc.text('Vorab-Aufnahmen - prof. Fotos nach Beauftragung',W-10,H-11,null,null,'right');
+    // Helper: draw rect
+    function rect(page,x,y,w,h,color,opacity){
+      page.drawRectangle({x,y,width:w,height:h,color:color||WHITE,opacity:opacity||1});
+    }
 
-    // ANSCHREIBEN
-    doc.addPage();hdr('Persoenlich fuer Sie');
-    let y=30;
-    tc(...G);fn(8,'bold');tx('01',10,y);
-    ss(...BD);doc.setLineWidth(0.3);doc.line(16,y-1,W-10,y-1);y+=8;
-    tc(...D);fn(22,'bold','times');
-    const h2=doc.splitTextToSize('Schoen, dass wir uns kennenlernen duerfen.',182);
-    doc.text(h2,10,y);y+=h2.length*8+4;
-    fn(11,'normal','helvetica');tc(...SL);tx('Sehr geehrte'+((f.empf&&f.empf.length)?' '+f.empf:''),10,y);y+=8;
-    const lt=String(f.let||'[Anschreiben noch nicht generiert]');
-    const ll=doc.splitTextToSize(lt,185);tc(...D);
-    const mid=Math.floor(ll.length/2);
-    doc.text(ll.slice(0,mid),10,y);y+=mid*5+3;
-    sf(...IV);doc.roundedRect(10,y,W-20,20,2,2,'F');sf(...G);doc.rect(10,y,1.5,20,'F');
-    fn(9,'italic');tc(...SL);
-    const ql=doc.splitTextToSize('Deshalb gehen wir in Vorleistung. Diese Mappe ist unser erster Beweis - noch bevor Sie etwas unterschreiben.',178);
-    doc.text(ql,14,y+7);y+=24;
-    tc(...D);doc.text(ll.slice(mid),10,y);y+=ll.slice(mid).length*5+10;
-    fn(14,'bold','times');tc(...D);tx(String(f.ag||'Saru Siva'),10,y);y+=6;
-    fn(9,'normal','helvetica');tc(...SL);tx('Ihr persoenlicher Ansprechpartner \u00b7 Amili Immobilien',10,y);
-    ftr();
+    // Helper: draw line
+    function line(page,x1,y1,x2,y2,color,thickness){
+      page.drawLine({start:{x:x1,y:y1},end:{x:x2,y:y2},thickness:thickness||0.5,color:color||LGRAY});
+    }
 
-    // DAS OBJEKT
-    doc.addPage();hdr('Das Objekt');
-    y=30;tc(...G);fn(8,'bold');tx('02',10,y);
-    ss(...BD);doc.setLineWidth(0.3);doc.line(16,y-1,W-10,y-1);y+=8;
-    tc(...D);fn(22,'bold','times');tx('Ihr Haus auf einen Blick',10,y);y+=10;
-    fn(10,'normal','helvetica');tc(...SL);
-    const il=wp(f.sub||'Eine '+f.typ+' in ruhiger Wohnlage.',185,10);doc.text(il,10,y);y+=il.length*5+6;
+    // Header for each page (except cover)
+    function drawHeader(page, label){
+      rect(page,0,PH-50,PW,50,WHITE);
+      line(page,20,PH-50,PW-20,PH-50,LGRAY,0.5);
+      // Logo text
+      txt(page,'AMILI',20,PH-28,14,fontB,GOLD);
+      txt(page,' IMMOBILIEN',20+fontB.widthOfTextAtSize('AMILI',14),PH-28,14,fontR,DARK);
+      if(label){
+        const lw=fontB.widthOfTextAtSize(label.toUpperCase(),7);
+        txt(page,label.toUpperCase(),PW-20-lw,PH-28,7,fontB,SLATE);
+      }
+    }
+
+    function drawFooter(page, adr){
+      rect(page,0,0,PW,28,NAVY);
+      txt(page,'Amili Immobilien - Berlin & Brandenburg',20,10,7,fontR,rgb(0.6,0.6,0.6));
+      const ref=String(adr||'').slice(0,50);
+      const rw=fontB.widthOfTextAtSize(ref,7);
+      txt(page,ref,PW-20-rw,10,7,fontB,GOLD);
+    }
+
+    // Embed logo
+    let logoImg=null;
+    try{
+      const logoBytes=Uint8Array.from(atob(LOGO_B64),c=>c.charCodeAt(0));
+      logoImg=await pdfDoc.embedPng(logoBytes);
+    }catch(e){}
+
+    // Embed photos
+    const embeddedPhotos=[];
+    for(const dataUrl of pP.slice(0,10)){
+      try{
+        const b64=dataUrl.split(',')[1];
+        const bytes=Uint8Array.from(atob(b64),c=>c.charCodeAt(0));
+        let img;
+        if(dataUrl.includes('image/png')){img=await pdfDoc.embedPng(bytes);}
+        else{img=await pdfDoc.embedJpg(bytes);}
+        embeddedPhotos.push(img);
+      }catch(e){embeddedPhotos.push(null);}
+    }
+
+    // ── PAGE 1: COVER ──
+    const coverPage=pdfDoc.addPage([PW,PH]);
+    if(embeddedPhotos[0]){
+      const {width:iw,height:ih}=embeddedPhotos[0].scale(1);
+      const scale=Math.max(PW/iw,PH/ih);
+      coverPage.drawImage(embeddedPhotos[0],{x:0,y:0,width:iw*scale,height:ih*scale});
+    }else{
+      rect(coverPage,0,0,PW,PH,NAVY);
+    }
+    // Gradient overlay
+    rect(coverPage,0,0,PW,PH*0.6,rgb(0,0,0),0.6);
+    // Logo box
+    rect(coverPage,15,PH-60,80,45,WHITE,0.92);
+    if(logoImg){
+      const {width:lw,height:lh}=logoImg.scale(1);
+      const s=Math.min(70/lw,38/lh);
+      coverPage.drawImage(logoImg,{x:18,y:PH-58,width:lw*s,height:lh*s});
+    }
+    // Title
+    txt(coverPage,'VORAB-EXPOSE - VERTRAULICHE MARKTEINSCHAETZUNG',20,PH*0.6+20,7,fontB,GOLD);
+    const titleLines=wrapLines(f.titel||'Ein Zuhause zum Verlieben.',PW-40,32,fontB);
+    titleLines.slice(0,3).forEach((l,i)=>txt(coverPage,l,20,PH*0.6-10-i*38,32,fontB,WHITE));
+    const subY=PH*0.6-10-titleLines.length*38-10;
+    const subLines=wrapLines(f.sub||'',PW-40,11,fontR);
+    subLines.slice(0,2).forEach((l,i)=>txt(coverPage,l,20,subY-i*15,11,fontR,WHITE));
+    // Address badge
+    rect(coverPage,15,subY-50,PW-30,28,rgb(1,1,1),0.15);
+    txt(coverPage,f.adr||'',22,subY-38,10,fontR,WHITE);
+    // Footer cover
+    rect(coverPage,0,0,PW,30,rgb(0,0,0),0.5);
+    txt(coverPage,'Erstellt fuer '+(f.empf||''),20,10,8,fontR,rgb(0.8,0.8,0.8));
+    txt(coverPage,'Vorab-Aufnahmen - professionelle Fotos folgen',PW-20,10,7,fontI,rgb(0.6,0.6,0.6));
+
+    // ── PAGE 2: ANSCHREIBEN ──
+    const p2=pdfDoc.addPage([PW,PH]);
+    drawHeader(p2,'Persoenlich fuer Sie');
+    let y=PH-70;
+    txt(p2,'01',20,y,8,fontB,GOLD);
+    line(p2,32,y+2,PW-20,y+2,LGRAY,0.5); y-=20;
+    txt(p2,'Schoen, dass wir uns kennenlernen duerfen.',20,y,22,fontB,DARK); y-=30;
+    txt(p2,'Sehr geehrte'+(f.empf?' '+f.empf:''),20,y,11,fontR,SLATE); y-=16;
+    const letterLines=wrapLines(f.let||'[Anschreiben noch nicht generiert]',PW-40,10,fontR);
+    const half=Math.floor(letterLines.length/2);
+    letterLines.slice(0,half).forEach(l=>{txt(p2,l,20,y,10,fontR,DARK);y-=13;});
+    y-=5;
+    // Quote box
+    rect(p2,20,y-50,PW-40,55,IVORY);
+    rect(p2,20,y-50,3,55,GOLD);
+    const qlines=wrapLines('Deshalb gehen wir in Vorleistung. Diese Mappe ist unser erster Beweis - noch bevor Sie etwas unterschreiben.',PW-70,10,fontI);
+    qlines.forEach((l,i)=>{txt(p2,l,28,y-10-i*13,10,fontI,SLATE);});
+    y-=60;
+    letterLines.slice(half).forEach(l=>{txt(p2,l,20,y,10,fontR,DARK);y-=13;});
+    y-=15;
+    txt(p2,f.ag||'Saru Siva',20,y,15,fontB,DARK); y-=16;
+    txt(p2,'Ihr persoenlicher Ansprechpartner - Amili Immobilien',20,y,9,fontR,SLATE);
+    drawFooter(p2,f.ref);
+
+    // ── PAGE 3: DAS OBJEKT ──
+    const p3=pdfDoc.addPage([PW,PH]);
+    drawHeader(p3,'Das Objekt');
+    y=PH-70;
+    txt(p3,'02',20,y,8,fontB,GOLD);
+    line(p3,32,y+2,PW-20,y+2,LGRAY,0.5); y-=20;
+    txt(p3,'Ihr Haus auf einen Blick',20,y,22,fontB,DARK); y-=15;
+    const introL=wrapLines(f.sub||'Eine '+f.typ+' in ruhiger Wohnlage.',PW-40,10,fontR);
+    introL.forEach(l=>{txt(p3,l,20,y,10,fontR,SLATE);y-=13;}); y-=10;
     const specs=[
-      ['OBJEKTART',f.typ,f.titel||''],['BAUJAHR',f.bj,'gewachsener Charakter'],
-      ['ZIMMER',f.zi,'Raumaufteilung flexibel'],['WOHNFLAECHE',f.fl?f.fl+' m2':'','ca. Angabe'],
-      ['GRUNDSTUECK',f.gr?f.gr+' m2':'','exakte Flaeche folgt'],['HEIZUNG',f.hz,''],
-      ['AUSSENANLAGE',f.au,''],['VERFUEGBARKEIT',f.vf,'nach Absprache'],
+      ['OBJEKTART',f.typ],['BAUJAHR',f.bj],
+      ['ZIMMER',f.zi],['WOHNFLAECHE',f.fl?f.fl+' m2':''],
+      ['GRUNDSTUECK',f.gr?f.gr+' m2':''],['HEIZUNG',f.hz],
+      ['AUSSENANLAGE',f.au],['VERFUEGBARKEIT',f.vf],
     ];
-    const cw=(W-22)/2,rh=24;
-    specs.forEach(([k,val,sub],i)=>{
-      const col=i%2,row=Math.floor(i/2),cx=10+col*(cw+2),cy2=y+row*rh;
-      sf(...IV);doc.roundedRect(cx,cy2,cw,rh-2,1,1,'F');
-      ss(...BD);doc.setLineWidth(0.2);doc.roundedRect(cx,cy2,cw,rh-2,1,1,'S');
-      tc(...G);fn(6.5,'bold');tx(k,cx+3,cy2+6);
-      tc(...D);fn(11,'bold');tx(String(val||'-').slice(0,28),cx+3,cy2+14);
-      tc(...SL);fn(7);tx(String(sub||'').slice(0,36),cx+3,cy2+20);
+    const cw=(PW-50)/2, ch=56;
+    specs.forEach(([k,v],i)=>{
+      const col=i%2, row=Math.floor(i/2);
+      const bx=20+col*(cw+10), by=y-row*ch;
+      rect(p3,bx,by-ch+6,cw,ch-4,IVORY);
+      p3.drawRectangle({x:bx,y:by-ch+6,width:cw,height:ch-4,borderColor:LGRAY,borderWidth:0.5});
+      txt(p3,k,bx+8,by-10,6.5,fontB,GOLD);
+      txt(p3,String(v||'-').slice(0,25),bx+8,by-26,12,fontB,DARK);
     });
-    y+=4*rh+8;ftr();
+    y-=4*ch+10;
+    rect(p3,20,y-24,PW-40,26,rgb(1,0.98,0.88));
+    txt(p3,'Hinweis: Flaechenangaben werden im Vor-Ort-Termin final aufgemessen.',26,y-16,7.5,fontR,SLATE);
+    drawFooter(p3,f.ref);
 
-    // BESCHREIBUNG
-    doc.addPage();hdr('Beschreibung');
-    y=30;tc(...G);fn(8,'bold');tx('03',10,y);
-    ss(...BD);doc.setLineWidth(0.3);doc.line(16,y-1,W-10,y-1);y+=8;
-    tc(...D);fn(22,'bold','times');tx('Ein Haus mit Herz und Geschichte',10,y);y+=10;
-    fn(10,'normal','helvetica');tc(...SL);
-    const dl=wp(f.desc||'[Beschreibung noch nicht generiert]',185,10);doc.text(dl,10,y);y+=dl.length*5+8;
-    sf(...G);doc.rect(10,y,2,0.5,'F');ss(...BD);doc.setLineWidth(0.3);doc.line(14,y,W-10,y);y+=8;
-    tc(...D);fn(15,'normal','times');tx('Die Highlights',10,y);y+=8;
-    const hlw=(W-24)/2;
+    // ── PAGE 4: BESCHREIBUNG ──
+    const p4=pdfDoc.addPage([PW,PH]);
+    drawHeader(p4,'Beschreibung');
+    y=PH-70;
+    txt(p4,'03',20,y,8,fontB,GOLD);
+    line(p4,32,y+2,PW-20,y+2,LGRAY,0.5); y-=20;
+    txt(p4,'Ein Haus mit Herz und Geschichte',20,y,22,fontB,DARK); y-=15;
+    const descLines=wrapLines(f.desc||'[Beschreibung noch nicht generiert]',PW-40,10,fontR);
+    descLines.forEach(l=>{txt(p4,l,20,y,10,fontR,SLATE);y-=13;}); y-=15;
+    p4.drawRectangle({x:20,y:y+2,width:4,height:1,color:GOLD});
+    line(p4,26,y+2,PW-20,y+2,LGRAY,0.3); y-=16;
+    txt(p4,'Die Highlights',20,y,15,fontR,DARK); y-=16;
+    const hlw=(PW-50)/2;
     f.hl.forEach((h,i)=>{
-      const col=i%2,row=Math.floor(i/2),cx=10+col*(hlw+4),cy3=y+row*20;
-      ss(...BD);doc.setLineWidth(0.2);doc.line(cx,cy3,cx+hlw,cy3);
-      tc(...G);fn(9,'bold');tx('*',cx,cy3+7);
-      tc(...D);fn(9,'bold');tx(String(h.t||''),cx+6,cy3+7);
-      tc(...SL);fn(8,'normal');doc.text(wp(String(h.d||''),hlw-8,8),cx+6,cy3+13);
+      const col=i%2, row=Math.floor(i/2);
+      const hx=20+col*(hlw+10), hy=y-row*46;
+      line(p4,hx,hy+2,hx+hlw,hy+2,LGRAY,0.3);
+      txt(p4,'* '+String(h.t||''),hx,hy-12,9,fontB,DARK,hlw-5);
+      const dlines=wrapLines(String(h.d||''),hlw-5,8,fontR);
+      dlines.slice(0,2).forEach((l,j)=>txt(p4,l,hx,hy-24-j*11,8,fontR,SLATE));
     });
-    ftr();
+    drawFooter(p4,f.ref);
 
-    // FOTOS
-    if(pP.length>1){
-      doc.addPage();hdr('Eindruecke I');
-      y=28;tc(...G);fn(8,'bold');tx('04',10,y);
-      ss(...BD);doc.setLineWidth(0.3);doc.line(16,y-1,W-10,y-1);y+=6;
-      tc(...D);fn(20,'bold','times');tx('Eindruecke vom Objekt',10,y);y+=5;
-      tc(...SL);fn(7);tx('Vorab-Aufnahmen \u00b7 Professionelle Fotos folgen nach Beauftragung',10,y);y+=5;
-      if(pP[1]){doc.addImage(pP[1],'JPEG',10,y,W-20,72,'','FAST');y+=74;}
-      const hw=(W-22)/2;
-      if(pP[2])doc.addImage(pP[2],'JPEG',10,y,hw,56,'','FAST');
-      if(pP[3])doc.addImage(pP[3],'JPEG',12+hw,y,hw,56,'','FAST');
-      ftr();
-    }
-    if(pP.length>4){
-      doc.addPage();hdr('Eindruecke II');
-      y=28;tc(...SL);fn(7);tx('Nach Beauftragung: professionelles Foto-Shooting',10,y);y+=7;
-      const hw2=(W-22)/2;
-      [[4,5],[6,7],[8,9]].forEach(([a,b])=>{
-        if(pP[a])doc.addImage(pP[a],'JPEG',10,y,hw2,56,'','FAST');
-        if(pP[b])doc.addImage(pP[b],'JPEG',12+hw2,y,hw2,56,'','FAST');
-        y+=58;
+    // ── PAGES 5-6: FOTOS ──
+    if(embeddedPhotos.length>1){
+      const p5=pdfDoc.addPage([PW,PH]);
+      drawHeader(p5,'Eindruecke I');
+      y=PH-70;
+      txt(p5,'04',20,y,8,fontB,GOLD);
+      line(p5,32,y+2,PW-20,y+2,LGRAY,0.5); y-=15;
+      txt(p5,'Eindruecke vom Objekt',20,y,20,fontB,DARK); y-=12;
+      txt(p5,'Vorab-Aufnahmen - Professionelle Fotos folgen nach Beauftragung',20,y,7,fontR,SLATE); y-=10;
+      if(embeddedPhotos[1]){
+        const {width:iw,height:ih}=embeddedPhotos[1].scale(1);
+        const imgW=PW-40, imgH=Math.min(ih*(imgW/iw),170);
+        p5.drawImage(embeddedPhotos[1],{x:20,y:y-imgH,width:imgW,height:imgH});
+        y-=imgH+8;
+      }
+      const hw=(PW-46)/2;
+      [2,3].forEach((idx,col)=>{
+        if(embeddedPhotos[idx]){
+          const {width:iw,height:ih}=embeddedPhotos[idx].scale(1);
+          const imgH=Math.min(ih*(hw/iw),130);
+          p5.drawImage(embeddedPhotos[idx],{x:20+col*(hw+6),y:y-imgH,width:hw,height:imgH});
+        }
       });
-      ftr();
+      drawFooter(p5,f.ref);
+    }
+    if(embeddedPhotos.length>4){
+      const p6=pdfDoc.addPage([PW,PH]);
+      drawHeader(p6,'Eindruecke II');
+      y=PH-70;
+      txt(p6,'Nach Beauftragung: professionelles Foto-Shooting',20,y,7,fontR,SLATE); y-=10;
+      const hw2=(PW-46)/2;
+      [[4,5],[6,7],[8,9]].forEach(([a,b])=>{
+        [a,b].forEach((idx,col)=>{
+          if(embeddedPhotos[idx]){
+            const {width:iw,height:ih}=embeddedPhotos[idx].scale(1);
+            const imgH=Math.min(ih*(hw2/iw),130);
+            p6.drawImage(embeddedPhotos[idx],{x:20+col*(hw2+6),y:y-imgH,width:hw2,height:imgH});
+          }
+        });
+        y-=138;
+      });
+      drawFooter(p6,f.ref);
     }
 
-    // LAGE
-    doc.addPage();hdr('Die Lage');
-    y=30;tc(...G);fn(8,'bold');tx('05',10,y);
-    ss(...BD);doc.setLineWidth(0.3);doc.line(16,y-1,W-10,y-1);y+=8;
-    tc(...D);fn(22,'bold','times');
-    const adrParts=String(f.adr||'').split('\u00b7');
-    const city=adrParts.length>1?adrParts[1].trim():String(f.adr||'').split(',')[0]||'der Region';
-    tx('Leben in '+city.trim(),10,y);y+=8;
-    if(pP[0]){
-      doc.addImage(pP[0],'JPEG',10,y,W-20,56,'','FAST');
-      sf(...NV);doc.setGState(doc.GState({opacity:.75}));doc.rect(10,y+43,100,13,'F');doc.setGState(doc.GState({opacity:1}));
-      tc(...WH);fn(8,'bold');tx(String(f.adr||''),13,y+52);y+=59;
+    // ── PAGE LAGE ──
+    const pL=pdfDoc.addPage([PW,PH]);
+    drawHeader(pL,'Die Lage');
+    y=PH-70;
+    txt(pL,'05',20,y,8,fontB,GOLD);
+    line(pL,32,y+2,PW-20,y+2,LGRAY,0.5); y-=20;
+    txt(pL,'Leben in '+String(f.adr||'der Region').split(',')[0],20,y,22,fontB,DARK); y-=12;
+    if(embeddedPhotos[0]){
+      const {width:iw,height:ih}=embeddedPhotos[0].scale(1);
+      const imgW=PW-40, imgH=Math.min(ih*(imgW/iw),145);
+      pL.drawImage(embeddedPhotos[0],{x:20,y:y-imgH,width:imgW,height:imgH});
+      rect(pL,20,y-imgH,240,28,NAVY,0.8);
+      txt(pL,String(f.adr||''),26,y-imgH+10,8,fontB,WHITE);
+      y-=imgH+12;
     }
-    tc(...SL);fn(10,'normal','helvetica');
-    const lagl=wp(String(f.lage||'[Lage-Text noch nicht generiert]'),185,10);
-    doc.text(lagl,10,y);ftr();
+    const lageLines=wrapLines(f.lage||'[Lage-Text noch nicht generiert]',PW-40,10,fontR);
+    lageLines.forEach(l=>{txt(pL,l,20,y,10,fontR,SLATE);y-=13;});
+    drawFooter(pL,f.ref);
 
-    // MARKT
-    doc.addPage();hdr('Markteinschaetzung');
-    y=30;tc(...G);fn(8,'bold');tx('06',10,y);
-    ss(...BD);doc.setLineWidth(0.3);doc.line(16,y-1,W-10,y-1);y+=8;
-    tc(...D);fn(20,'bold','times');tx('Wertermittlung & Preisstrategie',10,y);y+=9;
-    fn(10,'normal','helvetica');tc(...SL);
-    tx('Aktuelle Vergleichspreise (Angebotspreise, Q2 2026):',10,y);y+=8;
-    const pb=(W-26)/3;
+    // ── PAGE MARKT ──
+    const pM=pdfDoc.addPage([PW,PH]);
+    drawHeader(pM,'Markteinschaetzung');
+    y=PH-70;
+    txt(pM,'06',20,y,8,fontB,GOLD);
+    line(pM,32,y+2,PW-20,y+2,LGRAY,0.5); y-=20;
+    txt(pM,'Wertermittlung und Preisstrategie',20,y,20,fontB,DARK); y-=14;
+    txt(pM,'Aktuelle Vergleichspreise (Angebotspreise, Q2 2026):',20,y,10,fontR,SLATE); y-=16;
+    const pb=(PW-50)/3;
     [[f.p1,f.s1],[f.p2,f.s2],[f.p3,f.s3]].forEach(([p,s],i)=>{
-      if(!p||!String(p).trim())return;
-      const bx=10+i*(pb+3);
-      sf(...IV);doc.roundedRect(bx,y,pb,20,1,1,'F');
-      tc(...D);fn(13,'bold');doc.text(String(p||'')+' EUR',bx+pb/2,y+10,null,null,'center');
-      tc(...SL);fn(6,'bold');doc.text(String(s||'').toUpperCase(),bx+pb/2,y+16,null,null,'center');
+      if(!p)return;
+      const bx=20+i*(pb+5);
+      rect(pM,bx,y-46,pb,50,IVORY);
+      pM.drawRectangle({x:bx,y:y-46,width:pb,height:50,borderColor:LGRAY,borderWidth:0.5});
+      const pw=fontB.widthOfTextAtSize(p+' EUR',13);
+      txt(pM,p+' EUR',bx+(pb-pw)/2,y-20,13,fontB,DARK);
+      const sw2=fontB.widthOfTextAtSize(String(s||'').toUpperCase(),6.5);
+      txt(pM,String(s||'').toUpperCase(),bx+(pb-sw2)/2,y-36,6.5,fontB,SLATE);
     });
-    y+=26;fn(10,'normal','helvetica');tc(...SL);
-    const ml=wp('Auf Basis von ca. '+String(f.fl||'-')+' m2 Wohnflaeche und Beruecksichtigung von Baujahr, Zustand und Ausstattung:',185,10);
-    doc.text(ml,10,y);y+=ml.length*5+6;
-    sf(...NV);doc.roundedRect(10,y,W-20,42,2,2,'F');
-    tc(...G);fn(7,'bold');tx('EMPFOHLENER ANGEBOTSPREIS',14,y+8);
-    tc(...WH);fn(26,'bold','times');tx(String(f.ep||'-'),14,y+22);
-    tc(136,136,136);fn(8,'normal','helvetica');tx('Marktwert-Korridor: '+String(f.ko||''),14,y+30);
-    ss([51,51,51]);doc.setLineWidth(0.2);doc.line(14,y+34,W-14,y+34);
-    tc(...G);fn(6.5,'bold');tx('ZIELKORRIDOR VERKAUF',14,y+39);tx('STRATEGIE',W/2+5,y+39);
-    tc(...WH);fn(10,'normal','helvetica');tx(String(f.zi2||'-'),14,y+46);tx('marktgerecht ab Tag 1',W/2+5,y+46);
-    y+=48;ftr();
+    y-=62;
+    const ml=wrapLines('Auf Basis von ca. '+f.fl+' m2 Wohnflaeche und Beruecksichtigung von Baujahr, Zustand und Ausstattung:',PW-40,10,fontR);
+    ml.forEach(l=>{txt(pM,l,20,y,10,fontR,SLATE);y-=13;}); y-=8;
+    rect(pM,20,y-100,PW-40,105,NAVY);
+    txt(pM,'EMPFOHLENER ANGEBOTSPREIS',28,y-16,7,fontB,GOLD);
+    txt(pM,String(f.ep||'-'),28,y-50,28,fontB,WHITE);
+    txt(pM,'Marktwert-Korridor: '+String(f.ko||''),28,y-66,8,fontR,rgb(0.6,0.6,0.6));
+    line(pM,28,y-74,PW-28,y-74,rgb(0.3,0.3,0.3),0.3);
+    txt(pM,'ZIELKORRIDOR VERKAUF',28,y-82,6.5,fontB,GOLD);
+    txt(pM,'STRATEGIE',PW/2+10,y-82,6.5,fontB,GOLD);
+    txt(pM,String(f.zi2||'-'),28,y-96,10,fontR,WHITE);
+    txt(pM,'marktgerecht ab Tag 1',PW/2+10,y-96,10,fontR,WHITE);
+    drawFooter(pM,f.ref);
 
-    // WARUM AMILI
-    doc.addPage();hdr('Warum Amili');
-    y=30;tc(...G);fn(8,'bold');tx('07',10,y);
-    ss(...BD);doc.setLineWidth(0.3);doc.line(16,y-1,W-10,y-1);y+=8;
-    tc(...D);fn(22,'bold','times');tx('Was wir anders machen',10,y);y+=10;
+    // ── PAGE WARUM AMILI ──
+    const pW=pdfDoc.addPage([PW,PH]);
+    drawHeader(pW,'Warum Amili');
+    y=PH-70;
+    txt(pW,'07',20,y,8,fontB,GOLD);
+    line(pW,32,y+2,PW-20,y+2,LGRAY,0.5); y-=20;
+    txt(pW,'Was wir anders machen',20,y,22,fontB,DARK); y-=20;
     const svcs=[
-      ['Professionelle Fotos','Hochwertiges Shooting & Home-Staging statt Handy-Schnappschuss.'],
-      ['Echtes Expose','Eine vollstaendige, emotionale Verkaufsmappe - wie diese hier.'],
-      ['Datenbasierter Preis','Marktgerechte Strategie ohne teure Preissenkungsschleifen.'],
-      ['Familien-Marketing','Gezielte Kampagnen auf Meta/Instagram & eigenes CRM.'],
+      ['Professionelle Fotos','Hochwertiges Shooting & Home-Staging.'],
+      ['Echtes Expose','Vollstaendige, emotionale Verkaufsmappe.'],
+      ['Datenbasierter Preis','Marktgerechte Strategie.'],
+      ['Familien-Marketing','Kampagnen auf Meta/Instagram & CRM.'],
     ];
-    const sw=(W-24)/2;
+    const sw2=(PW-50)/2;
     svcs.forEach(([t,d],i)=>{
-      const col=i%2,row=Math.floor(i/2),cx=10+col*(sw+4),cy4=y+row*28;
-      sf(...IV);ss(...BD);doc.setLineWidth(0.2);doc.roundedRect(cx,cy4,sw,26,1,1,'FD');
-      tc(...D);fn(9,'bold');tx(t,cx+6,cy4+11);
-      tc(...SL);fn(8,'normal');doc.text(wp(d,sw-10,8),cx+6,cy4+17);
+      const col=i%2, row=Math.floor(i/2);
+      const bx=20+col*(sw2+10), by=y-row*60;
+      rect(pW,bx,by-54,sw2,56,IVORY);
+      pW.drawRectangle({x:bx,y:by-54,width:sw2,height:56,borderColor:LGRAY,borderWidth:0.5});
+      txt(pW,t,bx+10,by-20,9,fontB,DARK);
+      const dls=wrapLines(d,sw2-20,8,fontR);
+      dls.forEach((l,j)=>txt(pW,l,bx+10,by-32-j*11,8,fontR,SLATE));
     });
-    y+=58;tc(...D);fn(15,'normal','times');tx('So geht es weiter',10,y);y+=9;
+    y-=130;
+    txt(pW,'So geht es weiter',20,y,15,fontR,DARK); y-=16;
     [['1','Persoenlicher Termin vor Ort','Kennenlernen, Aufmass & finale Wertermittlung.'],
      ['2','Professionelle Aufbereitung','Foto-Shooting, finales Expose, Energieausweis.'],
      ['3','Start der Vermarktung','Gezielte Ansprache passender Familien.'],
-     ['4','Der richtige Kaeufer','Qualifizierte Interessenten, die Ihr Haus genauso lieben.'],
+     ['4','Der richtige Kaeufer','Qualifizierte Interessenten.'],
     ].forEach(([n,t,d])=>{
-      sf(...G);doc.circle(12.5,y+3,4,'F');
-      tc(...WH);fn(8,'bold');doc.text(String(n||''),12.5,y+4.5,null,null,'center');
-      tc(...D);fn(9,'bold');tx(t,20,y+4);
-      tc(...SL);fn(8,'normal');tx(d,20,y+10);
-      ss(...BD);doc.setLineWidth(0.2);doc.line(10,y+14,W-10,y+14);y+=16;
+      rect(pW,20,y-2,16,16,GOLD);
+      txt(pW,n,25,y+3,8,fontB,WHITE);
+      txt(pW,t,42,y+10,9,fontB,DARK);
+      txt(pW,d,42,y-1,8,fontR,SLATE);
+      line(pW,20,y-10,PW-20,y-10,LGRAY,0.3);
+      y-=30;
     });
-    y+=4;sf(...IV);ss(...G);doc.setLineWidth(0.6);doc.roundedRect(10,y,W-20,32,2,2,'FD');
-    tc(...D);fn(14,'bold','times');tx(String(f.ag||'Saru Siva'),15,y+11);
-    fn(8,'normal','helvetica');tc(...SL);tx('Ihr persoenlicher Ansprechpartner \u00b7 Amili Immobilien',15,y+18);
-    ['E-Mail','Telefon','Web'].forEach((l,i)=>{tc(...G);fn(7,'bold');tx(l,W/2+5,y+9+i*7);});
-    [String(f.em||''),String(f.tel||''),'www.amili-immo.de'].forEach((v,i)=>{tc(...D);fn(8,'normal');tx(v,W/2+27,y+9+i*7);});
-    y+=37;tc([170,170,170]);fn(6.5);
-    const disc=wp('Vorab-Expose / unverbindliche Erstinformation. Alle Angaben sind vorlaeuig. Stand: '+new Date().toLocaleDateString('de-DE',{month:'long',year:'numeric'})+'.',W-20,6.5);
-    doc.text(disc,10,y);
-    ftr();
+    y-=10;
+    rect(pW,20,y-68,PW-40,72,IVORY);
+    pW.drawRectangle({x:20,y:y-68,width:PW-40,height:72,borderColor:GOLD,borderWidth:0.8});
+    txt(pW,String(f.ag||'Saru Siva'),30,y-18,14,fontB,DARK);
+    txt(pW,'Ihr persoenlicher Ansprechpartner - Amili Immobilien',30,y-32,8,fontR,SLATE);
+    txt(pW,'E-Mail',PW/2,y-18,7,fontB,GOLD);txt(pW,String(f.em||''),PW/2+45,y-18,8,fontR,DARK);
+    txt(pW,'Telefon',PW/2,y-30,7,fontB,GOLD);txt(pW,String(f.tel||''),PW/2+45,y-30,8,fontR,DARK);
+    txt(pW,'Web',PW/2,y-42,7,fontB,GOLD);txt(pW,'www.amili-immo.de',PW/2+45,y-42,8,fontR,DARK);
+    txt(pW,'Vorab-Expose / unverbindliche Erstinformation. Stand: '+new Date().getFullYear()+'.',20,y-62,6.5,fontR,SLATE);
+    drawFooter(pW,f.ref);
 
-    const fname='AMI-'+(String(f.adr||'expose')).replace(/[^a-zA-Z0-9]/g,'-').slice(0,25)+'-'+String(f.ref||'001')+'.pdf';
-    doc.save(fname);
+    // Save and download
+    const pdfBytes=await pdfDoc.save();
+    const blob=new Blob([pdfBytes],{type:'application/pdf'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;
+    a.download='AMI-'+String(f.adr||'expose').replace(/[^a-zA-Z0-9]/g,'-').slice(0,20)+'-'+String(f.ref||'001')+'.pdf';
+    a.click();
+    URL.revokeObjectURL(url);
     st('PDF gespeichert!','ok');
-  }catch(e){console.error(e);st('Fehler: '+e.message,'err');}
-  document.getElementById('btn-gen').disabled=false;
-  setTimeout(()=>st(''),5000);
+
+  }catch(e){
+    console.error(e);
+    st('Fehler: '+e.message,'err');
+  }
+  btn.disabled=false;
+  setTimeout(()=>st(''),6000);
 }
 </script>
 </body>
