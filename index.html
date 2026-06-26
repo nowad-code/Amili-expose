@@ -244,28 +244,31 @@ async function genLage(){
 async function generatePDF(){
   const btn=document.getElementById('btn-gen');btn.disabled=true;st('PDF wird erstellt...');
   try{
-    const f=gf();const {jsPDF}=window.jspdf;
+    const f=gf();
+    const {jsPDF}=window.jspdf;
     const doc=new jsPDF({unit:'mm',format:'a4'});
     const W=210,H=297;
+    const G=[201,168,76],D=[15,15,14],IV=[250,250,248],SL=[107,107,107],
+          WH=[255,255,255],NV=[24,23,20],BD=[228,228,223];
     const sf=(a,b,c)=>doc.setFillColor(a,b,c);
-    const tx=(t,x,y,align)=>{const s=String(t||'');if(align)doc.text(String(s||''),x,y,align);else doc.text(String(s||''),x,y);};
     const ss=(a,b,c)=>doc.setDrawColor(a,b,c);
     const tc=(a,b,c)=>doc.setTextColor(a,b,c);
     const fn=(sz,w,fam)=>{doc.setFont(fam||'helvetica',w||'normal');doc.setFontSize(sz);};
     const wp=(t,mw,sz)=>{fn(sz||10);return doc.splitTextToSize(String(t||''),mw);};
+    const tx=(t,x,y,opt)=>{const s=String(t||'');try{opt?doc.text(s,x,y,opt):doc.text(s,x,y);}catch(e){}};
 
     function hdr(lbl){
       sf(...WH);doc.rect(0,0,W,22,'F');
       try{doc.addImage('data:image/png;base64,'+LOGO,'PNG',10,4,22,13,'','FAST');}catch(e){}
-      tc(...G);fn(11,'bold');doc.text('AMILI',35,11);
-      tc(...D);fn(11,'normal');doc.text('IMMOBILIEN',49,11);
-      if(lbl){tc(...SL);fn(7,'bold');doc.text(lbl.toUpperCase(),W-10,11,'right');}
+      tc(...G);fn(11,'bold');tx('AMILI',35,11);
+      tc(...D);fn(11,'normal');tx('IMMOBILIEN',49,11);
+      if(lbl){tc(...SL);fn(7,'bold');tx(lbl.toUpperCase(),W-10,11,{align:'right'});}
       ss(...BD);doc.setLineWidth(0.3);doc.line(10,22,W-10,22);
     }
     function ftr(){
       sf(...NV);doc.rect(0,H-12,W,12,'F');
-      tc(85,85,85);fn(7);doc.text('Amili Immobilien \u00b7 Berlin & Brandenburg',10,H-5);
-      tc(...G);fn(7,'bold');doc.text('Vorab-Expos\u00e9 \u00b7 '+f.adr,W-10,H-5,'right');
+      tc(85,85,85);fn(7);tx('Amili Immobilien \u00b7 Berlin & Brandenburg',10,H-5);
+      tc(...G);fn(7,'bold');tx('Vorab-Expos\u00e9 \u00b7 '+String(f.adr||''),W-10,H-5,{align:'right'});
     }
 
     // COVER
@@ -276,88 +279,90 @@ async function generatePDF(){
     sf(...WH);doc.setGState(doc.GState({opacity:.92}));doc.roundedRect(8,8,32,19,2,2,'F');doc.setGState(doc.GState({opacity:1}));
     try{doc.addImage('data:image/png;base64,'+LOGO,'PNG',10,10,28,15,'','FAST');}catch(e){}
     const cy0=H*0.47;
-    tc(...G);fn(7,'bold');doc.text('VORAB-EXPOS\u00c9  \u00b7  VERTRAULICHE MARKTEINSCH\u00c4TZUNG',12,cy0);
+    tc(...G);fn(7,'bold');tx('VORAB-EXPOS\u00c9 \u00b7 VERTRAULICHE MARKTEINSCH\u00c4TZUNG',12,cy0);
     tc(...WH);fn(28,'bold','times');
-    const tl=doc.splitTextToSize(f.titel||'Ein Zuhause zum Verlieben.',175);
-    doc.text(String(tl||''),12,cy0+9);fn(10,'normal','helvetica');
-    const ul=doc.splitTextToSize(f.sub||'',170);if(ul[0])doc.text(String(ul||''),12,cy0+tl.length*10+10);
-    const ay=cy0+tl.length*10+(ul[0]?ul.length*6+14:10);
+    const tl=doc.splitTextToSize(String(f.titel||'Ein Zuhause zum Verlieben.'),175);
+    doc.text(tl,12,cy0+9);fn(10,'normal','helvetica');
+    const ul=doc.splitTextToSize(String(f.sub||''),170);
+    if(ul&&ul[0]&&ul[0].length>0)doc.text(ul,12,cy0+tl.length*10+10);
+    const ay=cy0+tl.length*10+((ul&&ul[0]&&ul[0].length)?ul.length*6+14:10);
     sf(...WH);doc.setGState(doc.GState({opacity:.15}));doc.roundedRect(10,ay,W-20,10,2,2,'F');doc.setGState(doc.GState({opacity:1}));
-    tc(...WH);fn(9);doc.text('\ud83d\udccd  '+f.adr,14,ay+7);
-    tc(170,170,170);fn(8);doc.text('Erstellt fuer '+(f.empf||''),10,H-11);
-    tc(130,130,130);doc.text('Vorab-Aufnahmen - professionelle Fotos folgen nach Beauftragung',W-10,H-11,'right');
+    tc(...WH);fn(9);tx(String(f.adr||''),14,ay+7);
+    tc(170,170,170);fn(8);tx('Erstellt fuer '+String(f.empf||''),10,H-11);
+    tc(130,130,130);tx('Vorab-Aufnahmen - professionelle Fotos folgen nach Beauftragung',W-10,H-11,{align:'right'});
 
     // ANSCHREIBEN
-    doc.addPage();hdr('Pers\u00f6nlich f\u00fcr Sie');
+    doc.addPage();hdr('Persoenlich fuer Sie');
     let y=30;
-    tc(...G);fn(8,'bold');doc.text('01',10,y);
+    tc(...G);fn(8,'bold');tx('01',10,y);
     ss(...BD);doc.setLineWidth(0.3);doc.line(16,y-1,W-10,y-1);y+=8;
     tc(...D);fn(22,'bold','times');
-    const h2=doc.splitTextToSize('Sch\u00f6n, dass wir uns kennenlernen d\u00fcrfen.',182);
-    doc.text(String(h2||''),10,y);y+=h2.length*8+4;
-    fn(11,'normal','helvetica');tc(...SL);doc.text('Sehr geehrte'+(f.empf?' '+f.empf:''),10,y);y+=8;
-    const lt=f.let||'[Anschreiben noch nicht generiert]';
-    const ll=wp(lt,185,10);tc(...D);const mid=Math.floor(ll.length/2);
-    doc.text(String(ll.slice(0||''),mid),10,y);y+=mid*5+3;
+    const h2=doc.splitTextToSize('Schoen, dass wir uns kennenlernen duerfen.',182);
+    doc.text(h2,10,y);y+=h2.length*8+4;
+    fn(11,'normal','helvetica');tc(...SL);tx('Sehr geehrte'+((f.empf&&f.empf.length)?' '+f.empf:''),10,y);y+=8;
+    const lt=String(f.let||'[Anschreiben noch nicht generiert]');
+    const ll=doc.splitTextToSize(lt,185);tc(...D);
+    const mid=Math.floor(ll.length/2);
+    doc.text(ll.slice(0,mid),10,y);y+=mid*5+3;
     sf(...IV);doc.roundedRect(10,y,W-20,20,2,2,'F');sf(...G);doc.rect(10,y,1.5,20,'F');
     fn(9,'italic');tc(...SL);
-    const ql=wp('\u201eDeshalb gehen wir in Vorleistung. Diese Mappe ist unser erster Beweis \u2014 noch bevor Sie etwas unterschreiben.\u201c',178,9);
-    doc.text(String(ql||''),14,y+7);y+=24;
+    const ql=doc.splitTextToSize('Deshalb gehen wir in Vorleistung. Diese Mappe ist unser erster Beweis - noch bevor Sie etwas unterschreiben.',178);
+    doc.text(ql,14,y+7);y+=24;
     tc(...D);doc.text(ll.slice(mid),10,y);y+=ll.slice(mid).length*5+10;
-    fn(14,'bold','times');tc(...D);tx(f.ag||'Saru Siva',10,y);y+=6;
-    fn(9,'normal','helvetica');tc(...SL);doc.text('Ihr pers\u00f6nlicher Ansprechpartner \u00b7 Amili Immobilien',10,y);
+    fn(14,'bold','times');tc(...D);tx(String(f.ag||'Saru Siva'),10,y);y+=6;
+    fn(9,'normal','helvetica');tc(...SL);tx('Ihr persoenlicher Ansprechpartner \u00b7 Amili Immobilien',10,y);
     ftr();
 
     // DAS OBJEKT
     doc.addPage();hdr('Das Objekt');
-    y=30;tc(...G);fn(8,'bold');doc.text('02',10,y);
+    y=30;tc(...G);fn(8,'bold');tx('02',10,y);
     ss(...BD);doc.setLineWidth(0.3);doc.line(16,y-1,W-10,y-1);y+=8;
-    tc(...D);fn(22,'bold','times');doc.text('Ihr Haus auf einen Blick',10,y);y+=10;
+    tc(...D);fn(22,'bold','times');tx('Ihr Haus auf einen Blick',10,y);y+=10;
     fn(10,'normal','helvetica');tc(...SL);
-    const il=wp(f.sub||'Eine '+f.typ+' in ruhiger Wohnlage.',185,10);doc.text(String(il||''),10,y);y+=il.length*5+6;
+    const il=wp(f.sub||'Eine '+f.typ+' in ruhiger Wohnlage.',185,10);doc.text(il,10,y);y+=il.length*5+6;
     const specs=[
       ['OBJEKTART',f.typ,f.titel||''],['BAUJAHR',f.bj,'gewachsener Charakter'],
-      ['ZIMMER',f.zi,'Raumaufteilung flexibel'],['WOHNFL\u00c4CHE',f.fl?f.fl+' m\u00b2':'','ca. Angabe'],
-      ['GRUNDST\u00dcCK',f.gr?f.gr+' m\u00b2':'','exakte Fl\u00e4che folgt'],['HEIZUNG',f.hz,''],
-      ['AUSSENANLAGE',f.au,''],['VERF\u00dcGBARKEIT',f.vf,'nach Absprache'],
+      ['ZIMMER',f.zi,'Raumaufteilung flexibel'],['WOHNFLAECHE',f.fl?f.fl+' m2':'','ca. Angabe'],
+      ['GRUNDSTUECK',f.gr?f.gr+' m2':'','exakte Flaeche folgt'],['HEIZUNG',f.hz,''],
+      ['AUSSENANLAGE',f.au,''],['VERFUEGBARKEIT',f.vf,'nach Absprache'],
     ];
     const cw=(W-22)/2,rh=24;
     specs.forEach(([k,val,sub],i)=>{
       const col=i%2,row=Math.floor(i/2),cx=10+col*(cw+2),cy2=y+row*rh;
       sf(...IV);doc.roundedRect(cx,cy2,cw,rh-2,1,1,'F');
       ss(...BD);doc.setLineWidth(0.2);doc.roundedRect(cx,cy2,cw,rh-2,1,1,'S');
-      tc(...G);fn(6.5,'bold');doc.text(String(k||''),cx+3,cy2+6);
-      tc(...D);fn(11,'bold');doc.text(String(val||'-').slice(0,28),cx+3,cy2+14);
-      tc(...SL);fn(7);doc.text(String(sub||'').slice(0,36),cx+3,cy2+20);
+      tc(...G);fn(6.5,'bold');tx(k,cx+3,cy2+6);
+      tc(...D);fn(11,'bold');tx(String(val||'-').slice(0,28),cx+3,cy2+14);
+      tc(...SL);fn(7);tx(String(sub||'').slice(0,36),cx+3,cy2+20);
     });
     y+=4*rh+8;ftr();
 
     // BESCHREIBUNG
     doc.addPage();hdr('Beschreibung');
-    y=30;tc(...G);fn(8,'bold');doc.text('03',10,y);
+    y=30;tc(...G);fn(8,'bold');tx('03',10,y);
     ss(...BD);doc.setLineWidth(0.3);doc.line(16,y-1,W-10,y-1);y+=8;
-    tc(...D);fn(22,'bold','times');doc.text('Ein Haus mit Herz & Geschichte',10,y);y+=10;
+    tc(...D);fn(22,'bold','times');tx('Ein Haus mit Herz und Geschichte',10,y);y+=10;
     fn(10,'normal','helvetica');tc(...SL);
-    const dl=wp(f.desc||'[Beschreibung noch nicht generiert]',185,10);doc.text(String(dl||''),10,y);y+=dl.length*5+8;
+    const dl=wp(f.desc||'[Beschreibung noch nicht generiert]',185,10);doc.text(dl,10,y);y+=dl.length*5+8;
     sf(...G);doc.rect(10,y,2,0.5,'F');ss(...BD);doc.setLineWidth(0.3);doc.line(14,y,W-10,y);y+=8;
-    tc(...D);fn(15,'normal','times');doc.text('Die Highlights',10,y);y+=8;
+    tc(...D);fn(15,'normal','times');tx('Die Highlights',10,y);y+=8;
     const hlw=(W-24)/2;
     f.hl.forEach((h,i)=>{
       const col=i%2,row=Math.floor(i/2),cx=10+col*(hlw+4),cy3=y+row*20;
       ss(...BD);doc.setLineWidth(0.2);doc.line(cx,cy3,cx+hlw,cy3);
-      tc(...G);fn(9,'bold');doc.text('\u2726',cx,cy3+7);
-      tc(...D);fn(9,'bold');doc.text(String(h.t||''||''),cx+6,cy3+7);
-      tc(...SL);fn(8,'normal');doc.text(String(wp(h.d||''||''),hlw-8,8),cx+6,cy3+13);
+      tc(...G);fn(9,'bold');tx('*',cx,cy3+7);
+      tc(...D);fn(9,'bold');tx(String(h.t||''),cx+6,cy3+7);
+      tc(...SL);fn(8,'normal');doc.text(wp(String(h.d||''),hlw-8,8),cx+6,cy3+13);
     });
     ftr();
 
     // FOTOS
     if(pP.length>1){
-      doc.addPage();hdr('Eindr\u00fccke I');
-      y=28;tc(...G);fn(8,'bold');doc.text('04',10,y);
+      doc.addPage();hdr('Eindruecke I');
+      y=28;tc(...G);fn(8,'bold');tx('04',10,y);
       ss(...BD);doc.setLineWidth(0.3);doc.line(16,y-1,W-10,y-1);y+=6;
-      tc(...D);fn(20,'bold','times');doc.text('Eindr\u00fccke vom Objekt',10,y);y+=5;
-      tc(...SL);fn(7);doc.text('Vorab-Aufnahmen \u00b7 Professionelle Fotos folgen nach Beauftragung',10,y);y+=5;
+      tc(...D);fn(20,'bold','times');tx('Eindruecke vom Objekt',10,y);y+=5;
+      tc(...SL);fn(7);tx('Vorab-Aufnahmen \u00b7 Professionelle Fotos folgen nach Beauftragung',10,y);y+=5;
       if(pP[1]){doc.addImage(pP[1],'JPEG',10,y,W-20,72,'','FAST');y+=74;}
       const hw=(W-22)/2;
       if(pP[2])doc.addImage(pP[2],'JPEG',10,y,hw,56,'','FAST');
@@ -365,8 +370,8 @@ async function generatePDF(){
       ftr();
     }
     if(pP.length>4){
-      doc.addPage();hdr('Eindr\u00fccke II');
-      y=28;tc(...SL);fn(7);doc.text('Nach Beauftragung: professionelles Foto-Shooting',10,y);y+=7;
+      doc.addPage();hdr('Eindruecke II');
+      y=28;tc(...SL);fn(7);tx('Nach Beauftragung: professionelles Foto-Shooting',10,y);y+=7;
       const hw2=(W-22)/2;
       [[4,5],[6,7],[8,9]].forEach(([a,b])=>{
         if(pP[a])doc.addImage(pP[a],'JPEG',10,y,hw2,56,'','FAST');
@@ -378,51 +383,56 @@ async function generatePDF(){
 
     // LAGE
     doc.addPage();hdr('Die Lage');
-    y=30;tc(...G);fn(8,'bold');doc.text('05',10,y);
+    y=30;tc(...G);fn(8,'bold');tx('05',10,y);
     ss(...BD);doc.setLineWidth(0.3);doc.line(16,y-1,W-10,y-1);y+=8;
     tc(...D);fn(22,'bold','times');
-    const city=(f.adr.split('\u00b7')[1]||f.adr.split(',')[0]||'der Region').trim();
-    doc.text('Leben in '+city,10,y);y+=8;
-    if(pP[0]){doc.addImage(pP[0],'JPEG',10,y,W-20,56,'','FAST');
+    const adrParts=String(f.adr||'').split('\u00b7');
+    const city=adrParts.length>1?adrParts[1].trim():String(f.adr||'').split(',')[0]||'der Region';
+    tx('Leben in '+city.trim(),10,y);y+=8;
+    if(pP[0]){
+      doc.addImage(pP[0],'JPEG',10,y,W-20,56,'','FAST');
       sf(...NV);doc.setGState(doc.GState({opacity:.75}));doc.rect(10,y+43,100,13,'F');doc.setGState(doc.GState({opacity:1}));
-      tc(...WH);fn(8,'bold');tx(f.adr,13,y+52);y+=59;}
+      tc(...WH);fn(8,'bold');tx(String(f.adr||''),13,y+52);y+=59;
+    }
     tc(...SL);fn(10,'normal','helvetica');
-    doc.text(String(wp(f.lage||'[Lage-Text noch nicht generiert]'||''),185,10),10,y);ftr();
+    const lagl=wp(String(f.lage||'[Lage-Text noch nicht generiert]'),185,10);
+    doc.text(lagl,10,y);ftr();
 
     // MARKT
-    doc.addPage();hdr('Markteinsch\u00e4tzung');
-    y=30;tc(...G);fn(8,'bold');doc.text('06',10,y);
+    doc.addPage();hdr('Markteinschaetzung');
+    y=30;tc(...G);fn(8,'bold');tx('06',10,y);
     ss(...BD);doc.setLineWidth(0.3);doc.line(16,y-1,W-10,y-1);y+=8;
-    tc(...D);fn(20,'bold','times');doc.text('Wertermittlung & Preisstrategie',10,y);y+=9;
+    tc(...D);fn(20,'bold','times');tx('Wertermittlung & Preisstrategie',10,y);y+=9;
     fn(10,'normal','helvetica');tc(...SL);
-    doc.text('Aktuelle Vergleichspreise (Angebotspreise, Q2 2026):',10,y);y+=8;
+    tx('Aktuelle Vergleichspreise (Angebotspreise, Q2 2026):',10,y);y+=8;
     const pb=(W-26)/3;
     [[f.p1,f.s1],[f.p2,f.s2],[f.p3,f.s3]].forEach(([p,s],i)=>{
-      if(!p)return;const bx=10+i*(pb+3);
+      if(!p||!String(p).trim())return;
+      const bx=10+i*(pb+3);
       sf(...IV);doc.roundedRect(bx,y,pb,20,1,1,'F');
-      tc(...D);fn(13,'bold');doc.text(String(p+' \u20ac'||''),bx+pb/2,y+10,'center');
-      tc(...SL);fn(6,'bold');doc.text((s||'').toUpperCase(),bx+pb/2,y+16,'center');
+      tc(...D);fn(13,'bold');tx(String(p)+' EUR',bx+pb/2,y+10,{align:'center'});
+      tc(...SL);fn(6,'bold');tx(String(s||'').toUpperCase(),bx+pb/2,y+16,{align:'center'});
     });
     y+=26;fn(10,'normal','helvetica');tc(...SL);
-    const ml=wp('Auf Basis von ca. '+f.fl+' m\u00b2 und Ber\u00fccksichtigung von Baujahr, Zustand und Ausstattung:',185,10);
-    doc.text(String(ml||''),10,y);y+=ml.length*5+6;
+    const ml=wp('Auf Basis von ca. '+String(f.fl||'-')+' m2 Wohnflaeche und Beruecksichtigung von Baujahr, Zustand und Ausstattung:',185,10);
+    doc.text(ml,10,y);y+=ml.length*5+6;
     sf(...NV);doc.roundedRect(10,y,W-20,42,2,2,'F');
-    tc(...G);fn(7,'bold');doc.text('EMPFOHLENER ANGEBOTSPREIS',14,y+8);
-    tc(...WH);fn(26,'bold','times');tx(f.ep||'-',14,y+22);
-    tc(136,136,136);fn(8,'normal','helvetica');doc.text('Marktwert-Korridor: '+f.ko,14,y+30);
+    tc(...G);fn(7,'bold');tx('EMPFOHLENER ANGEBOTSPREIS',14,y+8);
+    tc(...WH);fn(26,'bold','times');tx(String(f.ep||'-'),14,y+22);
+    tc(136,136,136);fn(8,'normal','helvetica');tx('Marktwert-Korridor: '+String(f.ko||''),14,y+30);
     ss([51,51,51]);doc.setLineWidth(0.2);doc.line(14,y+34,W-14,y+34);
-    tc(...G);fn(6.5,'bold');doc.text('ZIELKORRIDOR VERKAUF',14,y+39);doc.text('STRATEGIE',W/2+5,y+39);
-    tc(...WH);fn(10,'normal','helvetica');tx(f.zi2||'-',14,y+46);doc.text('marktgerecht ab Tag 1',W/2+5,y+46);
+    tc(...G);fn(6.5,'bold');tx('ZIELKORRIDOR VERKAUF',14,y+39);tx('STRATEGIE',W/2+5,y+39);
+    tc(...WH);fn(10,'normal','helvetica');tx(String(f.zi2||'-'),14,y+46);tx('marktgerecht ab Tag 1',W/2+5,y+46);
     y+=48;ftr();
 
     // WARUM AMILI
     doc.addPage();hdr('Warum Amili');
-    y=30;tc(...G);fn(8,'bold');doc.text('07',10,y);
+    y=30;tc(...G);fn(8,'bold');tx('07',10,y);
     ss(...BD);doc.setLineWidth(0.3);doc.line(16,y-1,W-10,y-1);y+=8;
-    tc(...D);fn(22,'bold','times');doc.text('Was wir anders machen',10,y);y+=10;
+    tc(...D);fn(22,'bold','times');tx('Was wir anders machen',10,y);y+=10;
     const svcs=[
       ['Professionelle Fotos','Hochwertiges Shooting & Home-Staging statt Handy-Schnappschuss.'],
-      ['Echtes Expos\u00e9','Eine vollst\u00e4ndige, emotionale Verkaufsmappe - wie diese hier.'],
+      ['Echtes Expose','Eine vollstaendige, emotionale Verkaufsmappe - wie diese hier.'],
       ['Datenbasierter Preis','Marktgerechte Strategie ohne teure Preissenkungsschleifen.'],
       ['Familien-Marketing','Gezielte Kampagnen auf Meta/Instagram & eigenes CRM.'],
     ];
@@ -430,32 +440,34 @@ async function generatePDF(){
     svcs.forEach(([t,d],i)=>{
       const col=i%2,row=Math.floor(i/2),cx=10+col*(sw+4),cy4=y+row*28;
       sf(...IV);ss(...BD);doc.setLineWidth(0.2);doc.roundedRect(cx,cy4,sw,26,1,1,'FD');
-      tc(...D);fn(9,'bold');doc.text(String(t||''),cx+6,cy4+11);
-      tc(...SL);fn(8,'normal');doc.text(String(wp(d||''),sw-10,8),cx+6,cy4+17);
+      tc(...D);fn(9,'bold');tx(t,cx+6,cy4+11);
+      tc(...SL);fn(8,'normal');doc.text(wp(d,sw-10,8),cx+6,cy4+17);
     });
-    y+=58;tc(...D);fn(15,'normal','times');doc.text('So geht es weiter',10,y);y+=9;
-    [['1','Pers\u00f6nlicher Termin vor Ort','Kennenlernen, Aufma\u00df & finale Wertermittlung.'],
-     ['2','Professionelle Aufbereitung','Foto-Shooting, finales Expos\u00e9, Energieausweis.'],
+    y+=58;tc(...D);fn(15,'normal','times');tx('So geht es weiter',10,y);y+=9;
+    [['1','Persoenlicher Termin vor Ort','Kennenlernen, Aufmass & finale Wertermittlung.'],
+     ['2','Professionelle Aufbereitung','Foto-Shooting, finales Expose, Energieausweis.'],
      ['3','Start der Vermarktung','Gezielte Ansprache passender Familien.'],
-     ['4','Der richtige K\u00e4ufer','Qualifizierte Interessenten, die Ihr Haus genauso lieben.'],
+     ['4','Der richtige Kaeufer','Qualifizierte Interessenten, die Ihr Haus genauso lieben.'],
     ].forEach(([n,t,d])=>{
       sf(...G);doc.circle(12.5,y+3,4,'F');
-      tc(...WH);fn(8,'bold');doc.text(String(n||''),12.5,y+4.5,'center');
-      tc(...D);fn(9,'bold');doc.text(String(t||''),20,y+4);
-      tc(...SL);fn(8,'normal');doc.text(String(d||''),20,y+10);
+      tc(...WH);fn(8,'bold');tx(n,12.5,y+4.5,{align:'center'});
+      tc(...D);fn(9,'bold');tx(t,20,y+4);
+      tc(...SL);fn(8,'normal');tx(d,20,y+10);
       ss(...BD);doc.setLineWidth(0.2);doc.line(10,y+14,W-10,y+14);y+=16;
     });
     y+=4;sf(...IV);ss(...G);doc.setLineWidth(0.6);doc.roundedRect(10,y,W-20,32,2,2,'FD');
-    tc(...D);fn(14,'bold','times');tx(f.ag||'Saru Siva',15,y+11);
-    fn(8,'normal','helvetica');tc(...SL);doc.text('Ihr pers\u00f6nlicher Ansprechpartner \u00b7 Amili Immobilien',15,y+18);
-    ['E-Mail','Telefon','Web'].forEach((l,i)=>{tc(...G);fn(7,'bold');doc.text(String(l||''),W/2+5,y+9+i*7);});
-    [f.em,f.tel,'www.amili-immo.de'].forEach((v,i)=>{tc(...D);fn(8,'normal');doc.text(String(v||''||''),W/2+27,y+9+i*7);});
+    tc(...D);fn(14,'bold','times');tx(String(f.ag||'Saru Siva'),15,y+11);
+    fn(8,'normal','helvetica');tc(...SL);tx('Ihr persoenlicher Ansprechpartner \u00b7 Amili Immobilien',15,y+18);
+    ['E-Mail','Telefon','Web'].forEach((l,i)=>{tc(...G);fn(7,'bold');tx(l,W/2+5,y+9+i*7);});
+    [String(f.em||''),String(f.tel||''),'www.amili-immo.de'].forEach((v,i)=>{tc(...D);fn(8,'normal');tx(v,W/2+27,y+9+i*7);});
     y+=37;tc([170,170,170]);fn(6.5);
-    doc.text(wp('Vorab-Expos\u00e9 / unverbindliche Erstinformation. Alle Angaben sind vorl\u00e4ufig. Stand: '+new Date().toLocaleDateString('de-DE',{month:'long',year:'numeric'})+'.',W-20,6.5),10,y);
+    const disc=wp('Vorab-Expose / unverbindliche Erstinformation. Alle Angaben sind vorlaeuig. Stand: '+new Date().toLocaleDateString('de-DE',{month:'long',year:'numeric'})+'.',W-20,6.5);
+    doc.text(disc,10,y);
     ftr();
 
-    const fname='AMI-'+(f.adr||'expose').replace(/[^a-zA-Z0-9]/g,'-').slice(0,25)+'-'+f.ref+'.pdf';
-    doc.save(fname);st('PDF gespeichert!','ok');
+    const fname='AMI-'+(String(f.adr||'expose')).replace(/[^a-zA-Z0-9]/g,'-').slice(0,25)+'-'+String(f.ref||'001')+'.pdf';
+    doc.save(fname);
+    st('PDF gespeichert!','ok');
   }catch(e){console.error(e);st('Fehler: '+e.message,'err');}
   document.getElementById('btn-gen').disabled=false;
   setTimeout(()=>st(''),5000);
