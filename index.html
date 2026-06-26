@@ -262,13 +262,13 @@ async function generatePDF(){
       try{doc.addImage('data:image/png;base64,'+LOGO,'PNG',10,4,22,13,'','FAST');}catch(e){}
       tc(...G);fn(11,'bold');tx('AMILI',35,11);
       tc(...D);fn(11,'normal');tx('IMMOBILIEN',49,11);
-      if(lbl){tc(...SL);fn(7,'bold');tx(lbl.toUpperCase(),W-10,11,{align:'right'});}
+      if(lbl){tc(...SL);fn(7,'bold');doc.text(String(lbl||'').toUpperCase(),W-10,11,null,null,'right');}
       ss(...BD);doc.setLineWidth(0.3);doc.line(10,22,W-10,22);
     }
     function ftr(){
       sf(...NV);doc.rect(0,H-12,W,12,'F');
       tc(85,85,85);fn(7);tx('Amili Immobilien \u00b7 Berlin & Brandenburg',10,H-5);
-      tc(...G);fn(7,'bold');tx('Vorab-Expos\u00e9 \u00b7 '+String(f.adr||''),W-10,H-5,{align:'right'});
+      tc(...G);fn(7,'bold');doc.text(String('Vorab-Expos\u00e9 \u00b7 '+String(f.adr||'')||''),W-10,H-5,null,null,'right');
     }
 
     // COVER
@@ -289,7 +289,7 @@ async function generatePDF(){
     sf(...WH);doc.setGState(doc.GState({opacity:.15}));doc.roundedRect(10,ay,W-20,10,2,2,'F');doc.setGState(doc.GState({opacity:1}));
     tc(...WH);fn(9);tx(String(f.adr||''),14,ay+7);
     tc(170,170,170);fn(8);tx('Erstellt fuer '+String(f.empf||''),10,H-11);
-    tc(130,130,130);tx('Vorab-Aufnahmen - professionelle Fotos folgen nach Beauftragung',W-10,H-11,{align:'right'});
+    tc(130,130,130);doc.text('Vorab-Aufnahmen - prof. Fotos nach Beauftragung',W-10,H-11,null,null,'right');
 
     // ANSCHREIBEN
     doc.addPage();hdr('Persoenlich fuer Sie');
@@ -410,8 +410,8 @@ async function generatePDF(){
       if(!p||!String(p).trim())return;
       const bx=10+i*(pb+3);
       sf(...IV);doc.roundedRect(bx,y,pb,20,1,1,'F');
-      tc(...D);fn(13,'bold');tx(String(p)+' EUR',bx+pb/2,y+10,{align:'center'});
-      tc(...SL);fn(6,'bold');tx(String(s||'').toUpperCase(),bx+pb/2,y+16,{align:'center'});
+      tc(...D);fn(13,'bold');doc.text(String(p||'')+' EUR',bx+pb/2,y+10,null,null,'center');
+      tc(...SL);fn(6,'bold');doc.text(String(s||'').toUpperCase(),bx+pb/2,y+16,null,null,'center');
     });
     y+=26;fn(10,'normal','helvetica');tc(...SL);
     const ml=wp('Auf Basis von ca. '+String(f.fl||'-')+' m2 Wohnflaeche und Beruecksichtigung von Baujahr, Zustand und Ausstattung:',185,10);
@@ -450,7 +450,7 @@ async function generatePDF(){
      ['4','Der richtige Kaeufer','Qualifizierte Interessenten, die Ihr Haus genauso lieben.'],
     ].forEach(([n,t,d])=>{
       sf(...G);doc.circle(12.5,y+3,4,'F');
-      tc(...WH);fn(8,'bold');tx(n,12.5,y+4.5,{align:'center'});
+      tc(...WH);fn(8,'bold');doc.text(String(n||''),12.5,y+4.5,null,null,'center');
       tc(...D);fn(9,'bold');tx(t,20,y+4);
       tc(...SL);fn(8,'normal');tx(d,20,y+10);
       ss(...BD);doc.setLineWidth(0.2);doc.line(10,y+14,W-10,y+14);y+=16;
