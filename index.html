@@ -395,17 +395,17 @@ async function generatePDF(){
       hline(page,ML,PH-48,PW-MR,LGRAY,0.5);
     }
 
-    // ── FOOTER ── exact Falkenhagen: "Amili Immobilien · Berlin & Brandenburg" left, "Vorab-Exposé · [ref]" right
+    // ── FOOTER ── exact Falkenhagen: "Amili Immobilien . Berlin & Brandenburg" left, "Vorab-Exposé . [ref]" right
     function drawFooter(page){
       hline(page,ML,28,PW-MR,LGRAY,0.3);
-      tx(page,'Amili Immobilien · Berlin & Brandenburg',ML,12,7,fR,SLATE);
-      const fref='Vorab-Exposé · '+(f.footref||f.adr.split(',')[0]||'');
+      tx(page,'Amili Immobilien . Berlin & Brandenburg',ML,12,7,fR,SLATE);
+      const fref='Vorab-Exposé . '+(f.footref||f.adr.split(',')[0]||'');
       const fw=fB.widthOfTextAtSize(fref,7);
       tx(page,fref,PW-MR-fw,12,7,fB,GOLD);
     }
 
     // ════════════════════════════════════════
-    // PAGE 1 — COVER
+    // PAGE 1 - COVER
     // ════════════════════════════════════════
     const p1=pdfDoc.addPage([PW,PH]);
     const cp=photos[0];
@@ -446,7 +446,7 @@ async function generatePDF(){
     }
 
     // Section label top - spaced
-    const secLbl='V O R A B - E X P O S É   ·   '+(f.sub?f.sub.toUpperCase().slice(0,40):'A N G E B O T');
+    const secLbl='V O R A B - E X P O S É   .   '+(f.sub?f.sub.toUpperCase().slice(0,40):'A N G E B O T');
     tx(p1,secLbl,ML,PH*0.42+18,6.5,fR,GOLD,PW-ML*2);
 
     // Big title - Garamond-like large
@@ -460,7 +460,7 @@ async function generatePDF(){
     ty-=subLines.length*16+10;
 
     // Address badge - rounded pill
-    const adrText='·  '+(f.adr||'');
+    const adrText='.  '+(f.adr||'');
     const adrW=Math.min(fR.widthOfTextAtSize(adrText,9)+24,PW-ML*2);
     fillRect(p1,ML,ty+20,adrW,22,rgb(1,1,1),0.15);
     strokeRect(p1,ML,ty+20,adrW,22,rgb(1,1,1),0.3);
@@ -471,12 +471,12 @@ async function generatePDF(){
     tx(p1,'Erstellt für ',ML,18,8,fR,rgb(0.75,0.75,0.75));
     const efX=ML+fR.widthOfTextAtSize('Erstellt für ',8);
     tx(p1,f.empf||'',efX,18,8,fB,WHITE);
-    const vorabTxt='Vorab-Aufnahmen — professionelle Fotos folgen nach Beauftragung';
+    const vorabTxt='Vorab-Aufnahmen - professionelle Fotos folgen nach Beauftragung';
     const vw=fR.widthOfTextAtSize(vorabTxt,7.5);
     tx(p1,vorabTxt,PW-MR-vw,18,7.5,fR,rgb(0.65,0.65,0.65));
 
     // ════════════════════════════════════════
-    // PAGE 2 — ANSCHREIBEN
+    // PAGE 2 - ANSCHREIBEN
     // ════════════════════════════════════════
     const p2=pdfDoc.addPage([PW,PH]);
     drawHeader(p2,'P E R S Ö N L I C H   F Ü R   S I E');
@@ -501,8 +501,8 @@ async function generatePDF(){
     llines.slice(0,half).forEach(l=>{tx(p2,l,ML,y,10,fR,DARK,PW-ML*2);y-=14;}); y-=8;
 
     // Quote box - exact Falkenhagen style: ivory bg, gold left border, italic
-    const qtext=f.quote||'Deshalb gehen wir in Vorleistung. Diese Mappe ist unser erster Beweis — noch bevor Sie etwas unterschreiben.';
-    const qlines=wl('„'+qtext+'“',PW-ML*2-32,10,fI);
+    const qtext=f.quote||'Deshalb gehen wir in Vorleistung. Diese Mappe ist unser erster Beweis - noch bevor Sie etwas unterschreiben.';
+    const qlines=wl('"'+qtext+'"',PW-ML*2-32,10,fI);
     const qH=qlines.length*14+24;
     fillRect(p2,ML,y+8,PW-ML*2,qH,IVORY);
     fillRect(p2,ML,y+8,3,qH,GOLD);
@@ -513,11 +513,11 @@ async function generatePDF(){
 
     // Signature
     tx(p2,f.ag||'Saru Siva',ML,y,17,fB,DARK); y-=20;
-    tx(p2,'Ihr persönlicher Ansprechpartner · Amili Immobilien',ML,y,9,fR,SLATE);
+    tx(p2,'Ihr persönlicher Ansprechpartner . Amili Immobilien',ML,y,9,fR,SLATE);
     drawFooter(p2);
 
     // ════════════════════════════════════════
-    // PAGE 3 — DAS OBJEKT
+    // PAGE 3 - DAS OBJEKT
     // ════════════════════════════════════════
     const p3=pdfDoc.addPage([PW,PH]);
     drawHeader(p3,'D A S   O B J E K T');
@@ -573,7 +573,7 @@ async function generatePDF(){
     drawFooter(p3);
 
     // ════════════════════════════════════════
-    // PAGE 4 — BESCHREIBUNG
+    // PAGE 4 - BESCHREIBUNG
     // ════════════════════════════════════════
     const p4=pdfDoc.addPage([PW,PH]);
     drawHeader(p4,'B E S C H R E I B U N G');
@@ -586,7 +586,7 @@ async function generatePDF(){
     descLines.forEach(l=>{tx(p4,l,ML,y,10,fR,DARK,PW-ML*2);y-=14;}); y-=16;
 
     // Divider with star
-    tx(p4,'✦',ML,y,10,fR,GOLD); hline(p4,ML+14,y+4,PW-MR,LGRAY,0.3); y-=20;
+    tx(p4,'*',ML,y,10,fR,GOLD); hline(p4,ML+14,y+4,PW-MR,LGRAY,0.3); y-=20;
     tx(p4,'Die Highlights',ML,y,18,fR,DARK); y-=26;
 
     // Highlights 2-col list style (exact Falkenhagen)
@@ -604,7 +604,7 @@ async function generatePDF(){
     drawFooter(p4);
 
     // ════════════════════════════════════════
-    // PAGES 5-6 — FOTOS (exact Falkenhagen layout)
+    // PAGES 5-6 - FOTOS (exact Falkenhagen layout)
     // 1 large + 2 small on page 5
     // 6 in 3x2 grid on page 6
     // ════════════════════════════════════════
@@ -617,7 +617,7 @@ async function generatePDF(){
 
       tx(p5,'04',ML,y,8,fI,GOLD); hline(p5,ML+16,y+3,PW-MR,LGRAY,0.4); y-=20;
       tx(p5,'Eindrücke vom Objekt',ML,y,28,fB,DARK); y-=12;
-      tx(p5,'Vorab-Aufnahmen · Professionelle Fotos folgen nach Beauftragung',ML,y,8,fR,SLATE); y-=14;
+      tx(p5,'Vorab-Aufnahmen . Professionelle Fotos folgen nach Beauftragung',ML,y,8,fR,SLATE); y-=14;
 
       // Photo 1 (large, full width)
       if(restPhotos[0]){
@@ -663,24 +663,24 @@ async function generatePDF(){
 
       // Vorab note
       if(y>40){
-        const noteW=fR.widthOfTextAtSize('Vorab-Aufnahmen · Professionelle Fotos folgen nach Beauftragung',8)+24;
+        const noteW=fR.widthOfTextAtSize('Vorab-Aufnahmen . Professionelle Fotos folgen nach Beauftragung',8)+24;
         fillRect(p5,ML,y,noteW,18,IVORY);
         strokeRect(p5,ML,y,noteW,18,LGRAY,0.4);
-        tx(p5,'Vorab-Aufnahmen · Professionelle Fotos folgen nach Beauftragung',ML+10,y-5,8,fR,SLATE);
+        tx(p5,'Vorab-Aufnahmen . Professionelle Fotos folgen nach Beauftragung',ML+10,y-5,8,fR,SLATE);
       }
       drawFooter(p5);
     }
 
-    // Page 6 — 6 photos in 2x3 grid with captions
+    // Page 6 - 6 photos in 2x3 grid with captions
     if(restPhotos.length>3){
       const p6=pdfDoc.addPage([PW,PH]);
       drawHeader(p6,'E I N D R Ü C K E   I I');
       y=PH-60;
 
-      const noteW2=fR.widthOfTextAtSize('Vorab-Aufnahmen · Nach Beauftragung erfolgt eine professionelle Aufbereitung',8)+24;
+      const noteW2=fR.widthOfTextAtSize('Vorab-Aufnahmen . Nach Beauftragung erfolgt eine professionelle Aufbereitung',8)+24;
       fillRect(p6,ML,y,noteW2,18,IVORY);
       strokeRect(p6,ML,y,noteW2,18,LGRAY,0.4);
-      tx(p6,'Vorab-Aufnahmen · Nach Beauftragung erfolgt eine professionelle Aufbereitung',ML+10,y-5,8,fR,SLATE);
+      tx(p6,'Vorab-Aufnahmen . Nach Beauftragung erfolgt eine professionelle Aufbereitung',ML+10,y-5,8,fR,SLATE);
       y-=26;
 
       const grid=restPhotos.slice(3,9);
@@ -711,7 +711,7 @@ async function generatePDF(){
     }
 
     // ════════════════════════════════════════
-    // PAGE — LAGE (exact Falkenhagen)
+    // PAGE - LAGE (exact Falkenhagen)
     // ════════════════════════════════════════
     const pL=pdfDoc.addPage([PW,PH]);
     drawHeader(pL,'D I E   L A G E');
@@ -769,7 +769,7 @@ async function generatePDF(){
     drawFooter(pL);
 
     // ════════════════════════════════════════
-    // PAGE — MARKT (Rendite & Wert - exact Falkenhagen)
+    // PAGE - MARKT (Rendite & Wert - exact Falkenhagen)
     // ════════════════════════════════════════
     const pM=pdfDoc.addPage([PW,PH]);
     drawHeader(pM,'R E N D I T E   &   W E R T');
@@ -844,10 +844,10 @@ async function generatePDF(){
     // Main price block - dark background (exact Falkenhagen)
     const priceBlockH=100;
     fillRect(pM,ML,y,PW-ML*2,priceBlockH,NAVY);
-    const priceLbl='E M P F O H L E N E R   V E R M A R K T U N G S P R E I S   ·   E I N S T I E G';
+    const priceLbl='E M P F O H L E N E R   V E R M A R K T U N G S P R E I S   .   E I N S T I E G';
     tx(pM,priceLbl,ML+16,y-14,6.5,fR,GOLD,PW-ML*2-20);
     tx(pM,f.ep||'-',ML+16,y-50,36,fB,WHITE,PW-ML*2-20);
-    if(f.ko)tx(pM,'Vorläufiger Rahmen: '+f.ko+' · finale Kaufpreisfindung nach gemeinsamer Objektaufnahme',ML+16,y-64,8,fR,rgb(0.7,0.7,0.7),PW-ML*2-20);
+    if(f.ko)tx(pM,'Vorläufiger Rahmen: '+f.ko+' . finale Kaufpreisfindung nach gemeinsamer Objektaufnahme',ML+16,y-64,8,fR,rgb(0.7,0.7,0.7),PW-ML*2-20);
     hline(pM,ML+16,y-70,PW-MR-16,rgb(0.25,0.25,0.25),0.3);
     if(f.fakt){
       tx(pM,'FAKTOR (POTENZIAL)',ML+16,y-78,6.5,fR,SLATE);
@@ -880,7 +880,7 @@ async function generatePDF(){
     drawFooter(pM);
 
     // ════════════════════════════════════════
-    // PAGE — WARUM AMILI (exact Falkenhagen)
+    // PAGE - WARUM AMILI (exact Falkenhagen)
     // ════════════════════════════════════════
     const pW=pdfDoc.addPage([PW,PH]);
     drawHeader(pW,'W A R U M   A M I L I');
@@ -892,7 +892,7 @@ async function generatePDF(){
     // 4 service boxes 2x2
     const svcs=[
       ['Professionelle Fotos','Hochwertiges Shooting & Home-Staging statt Handy-Schnappschuss.'],
-      ['Echtes Exposé','Vollständige, emotionale Verkaufsmappe — wie diese hier.'],
+      ['Echtes Exposé','Vollständige, emotionale Verkaufsmappe - wie diese hier.'],
       ['Datenbasierter Preis','Marktgerechte Strategie ohne teure Preissenkungsschleifen.'],
       ['Familien-Marketing','Gezielte Kampagnen auf Meta/Instagram & eigenes CRM.'],
     ];
@@ -913,7 +913,7 @@ async function generatePDF(){
     [
       ['1','Persönlicher Termin & Objektaufnahme','Einheiten, Zustand und Unterlagen gemeinsam erfassen.'],
       ['2','Finale Kalkulation & Aufbereitung','Kaufpreis-/Renditerechnung, Profifotos, Energieausweis.'],
-      ['3','Gezielte Kapitalanleger-Vermarktung','Ansprache passender Investoren — diskret & strukturiert.'],
+      ['3','Gezielte Kapitalanleger-Vermarktung','Ansprache passender Investoren - diskret & strukturiert.'],
       ['4','Qualifizierter Käufer','Solventer Investor und reibungslose Abwicklung.'],
     ].forEach(([n,t,d])=>{
       // Circle number
@@ -931,7 +931,7 @@ async function generatePDF(){
     fillRect(pW,ML,y,PW-ML*2,ctH,IVORY);
     strokeRect(pW,ML,y,PW-ML*2,ctH,LGRAY,0.5);
     tx(pW,f.ag||'Saru Siva',ML+16,y-20,20,fB,DARK);
-    tx(pW,'Amili Immobilien · Ihr Ansprechpartner für den Verkauf',ML+16,y-36,9,fR,SLATE);
+    tx(pW,'Amili Immobilien . Ihr Ansprechpartner für den Verkauf',ML+16,y-36,9,fR,SLATE);
     // Contact right side
     const cx2=PW/2+10;
     [['E-Mail',f.em||'saru.siva@amili-immo.de'],['Telefon',f.tel||'+49 176 4929 4590'],['Web','www.amili-immo.de']].forEach(([l,v],i)=>{
