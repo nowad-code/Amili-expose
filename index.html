@@ -327,16 +327,46 @@ async function importFromFile(e){
   zone.style.borderColor = '#C9A84C';
 
   try{
-    // Convert to base64
-    const b64 = await new Promise((res,rej)=>{
-      const fr = new FileReader();
-      fr.onload = ev => res(ev.target.result.split(',')[1]);
-      fr.onerror = rej;
-      fr.readAsDataURL(file);
-    });
-
     const isPDF = file.type === 'application/pdf' || file.name.endsWith('.pdf');
-    const mediaType = isPDF ? 'application/pdf' : (file.type || 'image/jpeg');
+    let b64, mediaType;
+
+    if(isPDF){
+      // PDF: convert to base64 directly but check size
+      if(file.size > 4 * 1024 * 1024){
+        throw new Error('PDF zu gross (max 4MB). Bitte als Screenshot/Foto hochladen.');
+      }
+      b64 = await new Promise((res,rej)=>{
+        const fr = new FileReader();
+        fr.onload = ev => res(ev.target.result.split(',')[1]);
+        fr.onerror = rej;
+        fr.readAsDataURL(file);
+      });
+      mediaType = 'application/pdf';
+    } else {
+      // Image: compress to max 1MB before sending
+      b64 = await new Promise((res,rej)=>{
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          let w=img.width, h=img.height;
+          const maxDim=1200;
+          if(w>maxDim||h>maxDim){
+            if(w>h){h=Math.round(h*maxDim/w);w=maxDim;}
+            else{w=Math.round(w*maxDim/h);h=maxDim;}
+          }
+          canvas.width=w; canvas.height=h;
+          canvas.getContext('2d').drawImage(img,0,0,w,h);
+          const data=canvas.toDataURL('image/jpeg',0.75).split(',')[1];
+          res(data);
+        };
+        img.onerror=rej;
+        const fr=new FileReader();
+        fr.onload=ev=>{img.src=ev.target.result;};
+        fr.onerror=rej;
+        fr.readAsDataURL(file);
+      });
+      mediaType = 'image/jpeg';
+    }
 
     // Call API with vision
     const r = await fetch('/api/extract', {
