@@ -322,42 +322,51 @@ async function importFromFile(e){
   if(!file) return;
   const status = document.getElementById('import-status');
   const zone = document.getElementById('pdf-drop-zone');
-  status.textContent = 'KI liest Dokument...';
+  status.textContent = 'Dokument wird gelesen...';
   status.style.color = '#C9A84C';
   zone.style.borderColor = '#C9A84C';
 
   try{
     const isPDF = file.type === 'application/pdf' || file.name.endsWith('.pdf');
-    let b64, mediaType;
+    let textContent = '';
+    let b64 = null;
+    let mediaType = '';
 
     if(isPDF){
-      // PDF: convert to base64 directly but check size
-      if(file.size > 4 * 1024 * 1024){
-        throw new Error('PDF zu gross (max 4MB). Bitte als Screenshot/Foto hochladen.');
+      // Extract text from PDF using PDF.js
+      status.textContent = 'PDF wird gelesen...';
+      if(!window.pdfjsLib){
+        await new Promise((res,rej)=>{
+          const s=document.createElement('script');
+          s.src='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+          s.onload=res;s.onerror=rej;document.head.appendChild(s);
+        });
+        window.pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
       }
-      b64 = await new Promise((res,rej)=>{
-        const fr = new FileReader();
-        fr.onload = ev => res(ev.target.result.split(',')[1]);
-        fr.onerror = rej;
-        fr.readAsDataURL(file);
-      });
-      mediaType = 'application/pdf';
+      const arrayBuffer = await file.arrayBuffer();
+      const pdf = await window.pdfjsLib.getDocument({data: arrayBuffer}).promise;
+      for(let i=1;i<=Math.min(pdf.numPages,10);i++){
+        const page = await pdf.getPage(i);
+        const tc = await page.getTextContent();
+        textContent += tc.items.map(item=>item.str).join(' ') + '
+';
+      }
+      if(!textContent.trim()){
+        throw new Error('Kein Text im PDF gefunden. Bitte als Foto/Screenshot hochladen.');
+      }
     } else {
-      // Image: compress to max 1MB before sending
+      // Image: compress
+      status.textContent = 'Bild wird komprimiert...';
       b64 = await new Promise((res,rej)=>{
         const img = new Image();
         img.onload = () => {
           const canvas = document.createElement('canvas');
-          let w=img.width, h=img.height;
-          const maxDim=1200;
-          if(w>maxDim||h>maxDim){
-            if(w>h){h=Math.round(h*maxDim/w);w=maxDim;}
-            else{w=Math.round(w*maxDim/h);h=maxDim;}
-          }
-          canvas.width=w; canvas.height=h;
+          let w=img.width,h=img.height;
+          const maxDim=1400;
+          if(w>maxDim||h>maxDim){if(w>h){h=Math.round(h*maxDim/w);w=maxDim;}else{w=Math.round(w*maxDim/h);h=maxDim;}}
+          canvas.width=w;canvas.height=h;
           canvas.getContext('2d').drawImage(img,0,0,w,h);
-          const data=canvas.toDataURL('image/jpeg',0.75).split(',')[1];
-          res(data);
+          res(canvas.toDataURL('image/jpeg',0.80).split(',')[1]);
         };
         img.onerror=rej;
         const fr=new FileReader();
@@ -365,76 +374,51 @@ async function importFromFile(e){
         fr.onerror=rej;
         fr.readAsDataURL(file);
       });
-      mediaType = 'image/jpeg';
+      mediaType='image/jpeg';
     }
 
-    // Call API with vision
+    status.textContent = 'KI analysiert...';
     const r = await fetch('/api/extract', {
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({b64, mediaType, isPDF})
+      body: JSON.stringify({textContent, b64, mediaType, isPDF})
     });
-    if(!r.ok) throw new Error('API Fehler '+r.status);
+    if(!r.ok){
+      const err=await r.json();
+      throw new Error(err.error||'API Fehler '+r.status);
+    }
     const data = await r.json();
 
-    // Fill form
-    if(data.typ) document.getElementById('f-typ').value = data.typ;
-    if(data.ref) document.getElementById('f-ref').value = data.ref;
-    if(data.titel) document.getElementById('f-titel').value = data.titel;
-    if(data.sub) document.getElementById('f-sub').value = data.sub;
-    if(data.adr) document.getElementById('f-adr').value = data.adr;
-    if(data.fl) document.getElementById('f-fl').value = data.fl;
-    if(data.gr) document.getElementById('f-gr').value = data.gr;
-    if(data.zi) document.getElementById('f-zi').value = data.zi;
-    if(data.bj) document.getElementById('f-bj').value = data.bj;
-    if(data.hz) document.getElementById('f-hz').value = data.hz;
-    if(data.vf) document.getElementById('f-vf').value = data.vf;
-    if(data.zustand) document.getElementById('f-zustand').value = data.zustand;
-    if(data.au) document.getElementById('f-au').value = data.au;
-    if(data.empf) document.getElementById('f-empf').value = data.empf;
-    if(data.footref) document.getElementById('f-footref').value = data.footref;
-    if(data.letter) document.getElementById('f-letter').value = data.letter;
-    if(data.quote) document.getElementById('f-quote').value = data.quote;
-    if(data.descTitle) document.getElementById('f-desc-title').value = data.descTitle;
-    if(data.desc) document.getElementById('f-desc').value = data.desc;
-    if(data.lageTitle) document.getElementById('f-lage-title').value = data.lageTitle;
-    if(data.lage) document.getElementById('f-lage').value = data.lage;
-    if(data.lageTags) document.getElementById('f-lage-tags').value = data.lageTags;
-    if(data.ep) document.getElementById('f-ep').value = data.ep;
-    if(data.ko) document.getElementById('f-ko').value = data.ko;
-    if(data.fakt) document.getElementById('f-fakt').value = data.fakt;
-    if(data.strat) document.getElementById('f-strat').value = data.strat;
-    if(data.kz1) document.getElementById('f-kz1').value = data.kz1;
-    if(data.kz1l) document.getElementById('f-kz1l').value = data.kz1l;
-    if(data.kz2) document.getElementById('f-kz2').value = data.kz2;
-    if(data.kz2l) document.getElementById('f-kz2l').value = data.kz2l;
-    if(data.kz3) document.getElementById('f-kz3').value = data.kz3;
-    if(data.kz3l) document.getElementById('f-kz3l').value = data.kz3l;
-    if(data.wert) document.getElementById('f-wert').value = data.wert;
-    if(data.disc) document.getElementById('f-disc').value = data.disc;
-    // Highlights
-    if(data.hl && Array.isArray(data.hl)){
-      data.hl.slice(0,6).forEach((h,i)=>{
-        if(document.getElementById('ht'+i)) document.getElementById('ht'+i).value = h.t||'';
-        if(document.getElementById('hd'+i)) document.getElementById('hd'+i).value = h.d||'';
-      });
+    // Fill all form fields
+    const setVal=(id,val)=>{const el=document.getElementById(id);if(el&&val)el.value=val;};
+    setVal('f-typ',data.typ);setVal('f-ref',data.ref);setVal('f-titel',data.titel);
+    setVal('f-sub',data.sub);setVal('f-adr',data.adr);setVal('f-fl',data.fl);
+    setVal('f-gr',data.gr);setVal('f-zi',data.zi);setVal('f-bj',data.bj);
+    setVal('f-hz',data.hz);setVal('f-vf',data.vf);setVal('f-zustand',data.zustand);
+    setVal('f-au',data.au);setVal('f-empf',data.empf);setVal('f-footref',data.footref);
+    setVal('f-letter',data.letter);setVal('f-quote',data.quote);
+    setVal('f-desc-title',data.descTitle);setVal('f-desc',data.desc);
+    setVal('f-lage-title',data.lageTitle);setVal('f-lage',data.lage);
+    setVal('f-lage-tags',data.lageTags);setVal('f-lage-hint',data.lageHint);
+    setVal('f-ep',data.ep);setVal('f-ko',data.ko);
+    setVal('f-fakt',data.fakt);setVal('f-strat',data.strat);
+    setVal('f-kz1',data.kz1);setVal('f-kz1l',data.kz1l);
+    setVal('f-kz2',data.kz2);setVal('f-kz2l',data.kz2l);
+    setVal('f-kz3',data.kz3);setVal('f-kz3l',data.kz3l);
+    setVal('f-wert',data.wert);setVal('f-disc',data.disc);
+    if(data.hl&&Array.isArray(data.hl)){
+      data.hl.slice(0,6).forEach((h,i)=>{setVal('ht'+i,h.t);setVal('hd'+i,h.d);});
     }
-    // Table rows
-    if(data.trows && Array.isArray(data.trows)){
+    if(data.trows&&Array.isArray(data.trows)&&data.trows.length>0){
       data.trows.forEach((row,i)=>{
-        if(i>0) addTableRow();
-        setTimeout(()=>{
-          if(document.getElementById('tp'+i)) document.getElementById('tp'+i).value = row.p||'';
-          if(document.getElementById('tf'+i)) document.getElementById('tf'+i).value = row.f||'';
-          if(document.getElementById('tr'+i)) document.getElementById('tr'+i).value = row.r||'';
-        }, 100);
+        if(i>0)addTableRow();
+        setTimeout(()=>{setVal('tp'+i,row.p);setVal('tf'+i,row.f);setVal('tr'+i,row.r);},150);
       });
     }
 
-    status.textContent = 'Alle Felder wurden automatisch ausgefullt!';
+    status.textContent = 'Alle Felder ausgefüllt!';
     status.style.color = '#5cb85c';
     zone.style.borderColor = '#5cb85c';
-    // Scroll to form
     document.getElementById('f-titel').scrollIntoView({behavior:'smooth',block:'center'});
   } catch(err){
     status.textContent = 'Fehler: ' + err.message;
