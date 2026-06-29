@@ -1,18 +1,13 @@
 export const config = {
-  api: {
-    bodyParser: {
-      sizeLimit: '10mb',
-    },
-  },
+  api: { bodyParser: { sizeLimit: '8mb' } },
 };
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  const { b64, mediaType, isPDF } = req.body;
-  if (!b64) return res.status(400).json({ error: 'No file data' });
+  const { textContent, b64, mediaType, isPDF } = req.body;
 
-  const prompt = `Du bist ein Experte fuer Immobilien-Exposees. Analysiere dieses Dokument und extrahiere ALLE Informationen. Antworte NUR mit einem validen JSON-Objekt ohne Markdown oder Codeblock.
+  const prompt = `Du bist ein Experte fuer Immobilien-Exposees. Extrahiere ALLE Informationen und antworte NUR mit validem JSON ohne Markdown.
 
 JSON-Format (leere Strings fuer fehlende Werte):
 {
@@ -23,47 +18,55 @@ JSON-Format (leere Strings fuer fehlende Werte):
   "adr": "Vollstaendige Adresse",
   "fl": "Wohnflaeche Zahl",
   "gr": "Grundstueck Zahl",
-  "zi": "Zimmer/Einheiten",
+  "zi": "Zimmer oder Einheiten",
   "bj": "Baujahr",
   "hz": "Heizung",
   "vf": "Verfuegbarkeit",
   "zustand": "Zustand",
   "au": "Aussenanlage Besonderheiten",
-  "empf": "Name Eigentuemer",
-  "footref": "Kurzer Objektname",
-  "letter": "Anschreiben Text",
-  "quote": "Zitat Kernsatz",
+  "empf": "Name Eigentuemer Empfaenger",
+  "footref": "Kurzer Objektname fuer Footer",
+  "letter": "Vollstaendiger Anschreiben Text",
+  "quote": "Zitat oder Kernsatz",
   "descTitle": "Titel Beschreibungsseite",
-  "desc": "Beschreibungstext",
+  "desc": "Vollstaendiger Beschreibungstext",
   "lageTitle": "Titel Lageseite",
-  "lage": "Lagetext",
-  "lageTags": "Tags getrennt durch Pipe",
-  "ep": "Kaufpreis",
+  "lage": "Vollstaendiger Lagetext",
+  "lageTags": "Tags getrennt durch Pipe-Zeichen",
+  "lageHint": "Hinweis-Text Lage",
+  "ep": "Empfohlener Kaufpreis",
   "ko": "Preis-Korridor",
-  "fakt": "Faktor",
-  "strat": "Strategie",
-  "kz1": "", "kz1l": "",
-  "kz2": "", "kz2l": "",
-  "kz3": "", "kz3l": "",
+  "fakt": "Faktor Multiplikator",
+  "strat": "Verkaufsstrategie",
+  "kz1": "Erste Kennzahl Wert",
+  "kz1l": "Erste Kennzahl Label",
+  "kz2": "Zweite Kennzahl Wert",
+  "kz2l": "Zweite Kennzahl Label",
+  "kz3": "Dritte Kennzahl Wert",
+  "kz3l": "Dritte Kennzahl Label",
   "wert": "Wertbetreiber Text",
-  "disc": "Disclaimer",
-  "hl": [{"t": "Titel", "d": "Detail"}],
-  "trows": [{"p": "Preis", "f": "Faktor", "r": "Rendite"}]
+  "disc": "Disclaimer Hinweis",
+  "hl": [{"t": "Highlight Titel", "d": "Highlight Detail"}],
+  "trows": [{"p": "Kaufpreis", "f": "Faktor", "r": "Rendite Prozent"}]
 }`;
 
   try {
     let messageContent;
-    
-    if (isPDF) {
+
+    if (isPDF && textContent) {
+      // Use extracted text - much smaller than sending PDF
+      messageContent = [{
+        type: 'text',
+        text: prompt + '\n\nDokument-Text:\n' + textContent.slice(0, 15000)
+      }];
+    } else if (b64 && mediaType) {
+      // Image
       messageContent = [
-        { type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: b64 } },
+        { type: 'image', source: { type: 'base64', media_type: mediaType, data: b64 } },
         { type: 'text', text: prompt }
       ];
     } else {
-      messageContent = [
-        { type: 'image', source: { type: 'base64', media_type: mediaType || 'image/jpeg', data: b64 } },
-        { type: 'text', text: prompt }
-      ];
+      return res.status(400).json({ error: 'Keine Daten empfangen' });
     }
 
     const response = await fetch('https://api.anthropic.com/v1/messages', {
@@ -82,23 +85,22 @@ JSON-Format (leere Strings fuer fehlende Werte):
 
     if (!response.ok) {
       const err = await response.text();
-      throw new Error('Anthropic API: ' + err.slice(0, 200));
+      throw new Error('Anthropic: ' + err.slice(0, 300));
     }
 
     const data = await response.json();
     const raw = (data.content || []).map(b => b.text || '').join('');
     const clean = raw.replace(/```json|```/g, '').trim();
-    
+
     let parsed;
     try {
       parsed = JSON.parse(clean);
     } catch(e) {
-      // Try to extract JSON from response
       const match = clean.match(/\{[\s\S]*\}/);
       if (match) parsed = JSON.parse(match[0]);
-      else throw new Error('Kein valides JSON in Antwort');
+      else throw new Error('Kein JSON in Antwort');
     }
-    
+
     res.status(200).json(parsed);
   } catch (error) {
     console.error('Extract error:', error.message);
