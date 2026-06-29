@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Amili Immobilien - Expose Generator</title>
-<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500;600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -25,25 +25,26 @@ body{font-family:Inter,sans-serif;background:linear-gradient(135deg,#0f0f0e,#1a1
 .btn-gen:disabled{opacity:.5;cursor:not-allowed;transform:none}
 .gen-st{font-size:11px;text-align:center;margin-top:8px;min-height:16px;color:#C9A84C}
 .gen-st.ok{color:#5cb85c}.gen-st.err{color:#e05c5c;font-size:10px}
-.main{margin-left:220px;flex:1;padding:40px 48px;max-width:820px}
-.sec-title{font-family:'EB Garamond',serif;font-size:26px;font-weight:500;color:#FAFAF8;margin-bottom:4px}
-.sec-sub{font-size:13px;color:#6B6B6B;margin-bottom:28px}
-.field{margin-bottom:16px}
-.field label{display:block;font-size:10px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:#C9A84C;margin-bottom:7px}
-.field input,.field textarea,.field select{width:100%;background:#0f0f0e;border:1px solid #2a2820;border-radius:9px;color:#FAFAF8;font-family:Inter,sans-serif;font-size:14px;padding:12px 16px;outline:none;transition:border-color .2s}
+.main{margin-left:220px;flex:1;padding:36px 44px;max-width:820px}
+.sec-title{font-family:'EB Garamond',serif;font-size:24px;font-weight:500;color:#FAFAF8;margin-bottom:4px}
+.sec-sub{font-size:12px;color:#6B6B6B;margin-bottom:24px}
+/* FIELD with bilingual label */
+.field{margin-bottom:14px}
+.field-labels{display:flex;align-items:baseline;gap:8px;margin-bottom:6px}
+.field-de{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#C9A84C}
+.field-en{font-size:9px;color:#454540;letter-spacing:.06em}
+.field input,.field textarea,.field select{width:100%;background:#0f0f0e;border:1px solid #2a2820;border-radius:8px;color:#FAFAF8;font-family:Inter,sans-serif;font-size:13px;padding:11px 14px;outline:none;transition:border-color .2s}
 .field input:focus,.field textarea:focus,.field select:focus{border-color:#C9A84C}
-.field input::placeholder,.field textarea::placeholder{color:#454540}
-.field textarea{resize:vertical;min-height:90px}
+.field input::placeholder,.field textarea::placeholder{color:#333330;font-size:12px}
+.field textarea{resize:vertical;min-height:88px}
 .field select{cursor:pointer;appearance:none}
-.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
-.divider{height:1px;background:#2a2820;margin:22px 0}
-.sub-lbl{font-size:9px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:#454540;margin-bottom:14px}
-.btn-ai{padding:11px 22px;background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.35);border-radius:9px;color:#C9A84C;font-family:Inter,sans-serif;font-weight:600;font-size:13px;cursor:pointer;transition:all .2s;margin-bottom:14px;display:inline-block}
-.btn-ai:hover{background:rgba(201,168,76,.2);border-color:#C9A84C}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+.divider{height:1px;background:#2a2820;margin:20px 0}
+.sub-lbl{font-size:8px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:#3a3830;margin-bottom:12px}
+.btn-ai{padding:10px 20px;background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.3);border-radius:8px;color:#C9A84C;font-family:Inter,sans-serif;font-weight:600;font-size:12px;cursor:pointer;transition:all .2s;margin-bottom:12px;display:inline-block}
+.btn-ai:hover{background:rgba(201,168,76,.18);border-color:#C9A84C}
 .btn-ai:disabled{opacity:.4;cursor:not-allowed}
-.upload-zone{border:2px dashed #2a2820;border-radius:12px;padding:28px;text-align:center;cursor:pointer;background:#0a0a09}
-.upload-zone:hover{border-color:#C9A84C}
 .photo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}
 .photo-item{position:relative;border-radius:8px;overflow:hidden;background:#111;aspect-ratio:4/3}
 .photo-item img{width:100%;height:100%;object-fit:cover}
@@ -51,7 +52,8 @@ body{font-family:Inter,sans-serif;background:linear-gradient(135deg,#0f0f0e,#1a1
 .photo-ctrl{position:absolute;bottom:0;left:0;right:0;display:flex;justify-content:space-between;padding:4px 6px;background:rgba(0,0,0,.7)}
 .photo-ctrl button{background:none;border:none;color:white;cursor:pointer;font-size:13px;padding:2px 5px}
 .photo-ctrl .del{color:#ff6b6b}
-.hl-num{color:#C9A84C;font-size:10px;font-weight:700;margin-bottom:6px}
+.upload-zone{border:2px dashed #2a2820;border-radius:10px;padding:24px;text-align:center;background:#0a0a09;margin-bottom:4px}
+.hl-num{color:#C9A84C;font-size:9px;font-weight:700;margin-bottom:5px;letter-spacing:.1em}
 </style>
 </head>
 <body>
@@ -76,123 +78,255 @@ body{font-family:Inter,sans-serif;background:linear-gradient(135deg,#0f0f0e,#1a1
 </aside>
 <main class="main">
 
+<!-- 01 OBJEKTDATEN -->
 <div id="sec-meta">
+  <div class="sec-title">Objektdaten</div>
+  <div class="sec-sub">Grundinformationen zum Objekt &mdash; Basic information about the property</div>
 
-<div id="sec-import" style="margin-bottom:24px;border:1px solid #2a2820;border-radius:12px;padding:20px;background:#0a0a09">
-  <div style="color:#C9A84C;font-size:10px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;margin-bottom:10px">PDF automatisch einlesen</div>
-  <div style="color:#6B6B6B;font-size:12px;margin-bottom:14px">Lade dein bestehendes Expos&eacute; oder eine Objektbeschreibung hoch &mdash; die KI liest alle Daten aus und f&uuml;llt das Formular automatisch.</div>
-  <div id="pdf-drop-zone" style="border:2px dashed #2a2820;border-radius:9px;padding:20px;text-align:center">
-    <div style="font-size:22px;margin-bottom:8px">&#128196;</div>
-    <div style="color:#FAFAF8;font-weight:600;font-size:13px;margin-bottom:12px">PDF oder Bild hochladen</div>
-    <input type="file" id="pdf-file-in" accept=".pdf,image/*" style="color:#C9A84C;font-size:13px;font-family:Inter,sans-serif" onchange="importFromFile(event)">
-  </div>
-  <div id="import-status" style="font-size:11px;text-align:center;margin-top:10px;min-height:16px;color:#C9A84C"></div>
-</div>
-  <div class="sec-title">Objektdaten</div><div class="sec-sub">Grundinformationen zum Objekt</div>
   <div class="g2">
-    <div class="field"><label>Objektart</label>
-      <select id="f-typ"><option>Reihenendhaus</option><option>Einfamilienhaus</option><option>Doppelh&auml;lfte</option><option>Reihenmittelhaus</option><option>Wohnung</option><option>Mehrfamilienhaus</option><option>Penthouse</option><option>Villa</option></select>
+    <div class="field">
+      <div class="field-labels"><span class="field-de">Objektart</span><span class="field-en">Property type</span></div>
+      <select id="f-typ">
+        <option>Reihenendhaus</option><option>Einfamilienhaus</option>
+        <option>Doppelh&auml;lfte</option><option>Reihenmittelhaus</option>
+        <option>Wohnung</option><option>Mehrfamilienhaus</option>
+        <option>Penthouse</option><option>Villa</option>
+      </select>
     </div>
-    <div class="field"><label>Ref.-Nr.</label><input id="f-ref" value="AMI-2025-001"></div>
+    <div class="field">
+      <div class="field-labels"><span class="field-de">Referenznummer</span><span class="field-en">Reference number</span></div>
+      <input id="f-ref" value="AMI-2025-001">
+    </div>
   </div>
-  <div class="field"><label>Expos&eacute;-Titel (gro&szlig;e &Uuml;berschrift)</label><input id="f-titel" placeholder="Eine Kapitalanlage mit Substanz."></div>
-  <div class="field"><label>Untertitel</label><input id="f-sub" placeholder="12 Wohneinheiten auf ca. 7.500 m&sup2; Grund"></div>
-  <div class="field"><label>Adresse</label><input id="f-adr" placeholder="Falkenhagen &middot; Brandenburg &middot; ca. 70 km von Berlin"></div>
+
+  <div class="field">
+    <div class="field-labels"><span class="field-de">Expos&eacute;-Titel</span><span class="field-en">Main headline of the expose</span></div>
+    <input id="f-titel" placeholder="z.B. Eine Kapitalanlage mit Substanz.">
+  </div>
+
+  <div class="field">
+    <div class="field-labels"><span class="field-de">Untertitel</span><span class="field-en">Subtitle / short description</span></div>
+    <input id="f-sub" placeholder="z.B. 12 Wohneinheiten auf ca. 7.500 m&sup2; Grund">
+  </div>
+
+  <div class="field">
+    <div class="field-labels"><span class="field-de">Adresse</span><span class="field-en">Full address</span></div>
+    <input id="f-adr" placeholder="z.B. K&ouml;ttgenstra&szlig;e 1 &middot; 13629 Berlin-Siemensstadt">
+  </div>
+
   <div class="g3">
-    <div class="field"><label>Wohnfl&auml;che m&sup2;</label><input id="f-fl" placeholder="600"></div>
-    <div class="field"><label>Grundst&uuml;ck m&sup2;</label><input id="f-gr" placeholder="7.500"></div>
-    <div class="field"><label>Zimmer / Einheiten</label><input id="f-zi" placeholder="12"></div>
+    <div class="field">
+      <div class="field-labels"><span class="field-de">Wohnfl&auml;che m&sup2;</span><span class="field-en">Living area m&sup2;</span></div>
+      <input id="f-fl" placeholder="z.B. 40">
+    </div>
+    <div class="field">
+      <div class="field-labels"><span class="field-de">Grundst&uuml;ck m&sup2;</span><span class="field-en">Plot size m&sup2;</span></div>
+      <input id="f-gr" placeholder="z.B. 400">
+    </div>
+    <div class="field">
+      <div class="field-labels"><span class="field-de">Zimmer / Einheiten</span><span class="field-en">Rooms / units</span></div>
+      <input id="f-zi" placeholder="z.B. 3">
+    </div>
   </div>
+
   <div class="g3">
-    <div class="field"><label>Baujahr</label><input id="f-bj" placeholder="1960"></div>
-    <div class="field"><label>Heizung</label><input id="f-hz" placeholder="&Ouml;lheizung"></div>
-    <div class="field"><label>Verf&uuml;gbarkeit</label><input id="f-vf" value="Sofort"></div>
+    <div class="field">
+      <div class="field-labels"><span class="field-de">Baujahr</span><span class="field-en">Year of construction</span></div>
+      <input id="f-bj" placeholder="z.B. 1960">
+    </div>
+    <div class="field">
+      <div class="field-labels"><span class="field-de">Heizung</span><span class="field-en">Heating type</span></div>
+      <input id="f-hz" placeholder="z.B. Zentralheizung">
+    </div>
+    <div class="field">
+      <div class="field-labels"><span class="field-de">Verf&uuml;gbarkeit</span><span class="field-en">Availability</span></div>
+      <input id="f-vf" value="Kurzfristig">
+    </div>
   </div>
-  <div class="field"><label>Zustand</label><input id="f-zustand" placeholder="Teilrenoviert · weiterer Renovierungsbedarf"></div>
-  <div class="field"><label>Au&szlig;enanlage / Besonderheiten</label><input id="f-au" placeholder="Pool, Garten, Terrasse, Carport"></div>
+
+  <div class="field">
+    <div class="field-labels"><span class="field-de">Zustand</span><span class="field-en">Condition of the property</span></div>
+    <input id="f-zustand" placeholder="z.B. Gepflegt &middot; bezugsfertig">
+  </div>
+
+  <div class="field">
+    <div class="field-labels"><span class="field-de">Au&szlig;enanlage / Besonderheiten</span><span class="field-en">Outdoor area / special features</span></div>
+    <input id="f-au" placeholder="z.B. Pool, Garten, Terrasse, Carport">
+  </div>
+
   <div class="divider"></div>
-  <div class="sub-lbl">Agent & Empf&auml;nger</div>
+  <div class="sub-lbl">Agent &amp; Empf&auml;nger &mdash; Agent &amp; Recipient</div>
+
   <div class="g2">
-    <div class="field"><label>Name Agent</label><input id="f-ag" value="Saru Siva"></div>
-    <div class="field"><label>E-Mail</label><input id="f-em" value="saru.siva@amili-immo.de"></div>
-    <div class="field"><label>Telefon</label><input id="f-tel" value="+49 176 4929 4590"></div>
-    <div class="field"><label>Empf&auml;nger (Name Eigentu&#x0308;mer)</label><input id="f-empf" placeholder="Frau Gabi Levecke"></div>
+    <div class="field">
+      <div class="field-labels"><span class="field-de">Name Agent</span><span class="field-en">Agent name</span></div>
+      <input id="f-ag" value="Saru Siva">
+    </div>
+    <div class="field">
+      <div class="field-labels"><span class="field-de">E-Mail</span><span class="field-en">Email address</span></div>
+      <input id="f-em" value="saru.siva@amili-immo.de">
+    </div>
+    <div class="field">
+      <div class="field-labels"><span class="field-de">Telefon</span><span class="field-en">Phone number</span></div>
+      <input id="f-tel" value="+49 176 4929 4590">
+    </div>
+    <div class="field">
+      <div class="field-labels"><span class="field-de">Empf&auml;nger (Eigentu&#x0308;mer)</span><span class="field-en">Recipient (owner name)</span></div>
+      <input id="f-empf" placeholder="z.B. Frau Gabi Levecke">
+    </div>
+  </div>
+
+  <div class="field">
+    <div class="field-labels"><span class="field-de">Objekt-Kurzname (Footer)</span><span class="field-en">Short object name for footer</span></div>
+    <input id="f-footref" placeholder="z.B. Wohnung K&ouml;ttgenstra&szlig;e">
+  </div>
+</div>
+
+<!-- 02 ANSCHREIBEN -->
+<div id="sec-letter" style="display:none">
+  <div class="sec-title">Anschreiben</div>
+  <div class="sec-sub">Pers&ouml;nlicher Brief &mdash; Personal letter to the owner</div>
+  <button class="btn-ai" id="btn-letter" onclick="genLetter()">&#x2726; Mit KI generieren &mdash; Generate with AI</button>
+  <div class="field">
+    <div class="field-labels"><span class="field-de">Brief-Text</span><span class="field-en">Letter body text</span></div>
+    <textarea id="f-letter" style="min-height:220px" placeholder="KI generieren oder direkt schreiben... / Generate with AI or type directly..."></textarea>
+  </div>
+  <div class="field">
+    <div class="field-labels"><span class="field-de">Zitat / Kernsatz (kursive Box)</span><span class="field-en">Key quote (italic box in letter)</span></div>
+    <textarea id="f-quote" style="min-height:60px" placeholder="z.B. Dieses Objekt vermarkten wir gezielt an Kapitalanleger..."></textarea>
+  </div>
+</div>
+
+<!-- 03 BESCHREIBUNG -->
+<div id="sec-desc" style="display:none">
+  <div class="sec-title">Beschreibung &amp; Highlights</div>
+  <div class="sec-sub">Objektbeschreibung und Highlights &mdash; Property description and highlights</div>
+  <div class="field">
+    <div class="field-labels"><span class="field-de">Titel der Beschreibungsseite</span><span class="field-en">Title of description page</span></div>
+    <input id="f-desc-title" placeholder="z.B. Ein Haus mit Herz und Geschichte">
+  </div>
+  <button class="btn-ai" id="btn-desc" onclick="genDesc()">&#x2726; Mit KI generieren &mdash; Generate with AI</button>
+  <div class="field">
+    <div class="field-labels"><span class="field-de">Objektbeschreibung</span><span class="field-en">Property description text</span></div>
+    <textarea id="f-desc" style="min-height:150px" placeholder="KI generieren oder direkt schreiben..."></textarea>
   </div>
   <div class="divider"></div>
-  <div class="sub-lbl">Fu&szlig;zeile (Referenzname f&uuml;r Footer)</div>
-  <div class="field"><label>Objekt-Kurzname (Footer rechts)</label><input id="f-footref" placeholder="MFH Falkenhagen"></div>
-</div>
-
-<div id="sec-letter" style="display:none">
-  <div class="sec-title">Anschreiben</div><div class="sec-sub">Pers&ouml;nlicher Brief &mdash; KI generiert, du bearbeitest</div>
-  <button class="btn-ai" id="btn-letter" onclick="genLetter()">&#x2726; Mit KI generieren</button>
-  <div class="field"><label>Brief-Text (bearbeitbar)</label><textarea id="f-letter" style="min-height:260px" placeholder="KI generieren oder direkt schreiben..."></textarea></div>
-  <div class="field"><label>Zitat / Kernsatz (in Kursiv-Box)</label><textarea id="f-quote" style="min-height:60px" placeholder="z.B. Dieses Objekt vermarkten wir gezielt an Kapitalanleger..."></textarea></div>
-</div>
-
-<div id="sec-desc" style="display:none">
-  <div class="sec-title">Beschreibung &amp; Highlights</div><div class="sec-sub">Objektbeschreibung und bis zu 6 Highlights</div>
-  <div class="field"><label>Titel Beschreibungsseite</label><input id="f-desc-title" placeholder="Ein Haus mit Herz und Geschichte"></div>
-  <button class="btn-ai" id="btn-desc" onclick="genDesc()">&#x2726; Mit KI generieren</button>
-  <div class="field"><label>Objektbeschreibung</label><textarea id="f-desc" style="min-height:160px" placeholder="KI generieren oder direkt schreiben..."></textarea></div>
-  <div class="divider"></div>
-  <div class="sub-lbl">Die Highlights (max. 6)</div>
+  <div class="sub-lbl">Highlights (max. 6)</div>
   <div id="hl-wrap"></div>
 </div>
 
+<!-- 04 FOTOS -->
 <div id="sec-photos" style="display:none">
-  <div class="sec-title">Fotos</div><div class="sec-sub">Bis zu 12 Fotos &mdash; das erste wird zum Cover</div>
-  <div class="upload-zone" onclick="document.getElementById('file-in').click()">
-    <input type="file" id="file-in" multiple accept="image/*" style="display:none" onchange="handlePhotos(event)">
-    <div style="font-size:28px;margin-bottom:8px">&#128444;</div>
-    <div style="color:#FAFAF8;font-weight:600;margin-bottom:4px">Fotos hochladen</div>
-    <div style="color:#6B6B6B;font-size:12px">JPG, PNG, WEBP &mdash; mehrere auf einmal m&ouml;glich</div>
+  <div class="sec-title">Fotos</div>
+  <div class="sec-sub">Bis zu 12 Fotos &mdash; das erste wird zum Cover &mdash; Up to 12 photos, first one is cover</div>
+  <div class="upload-zone">
+    <input type="file" id="file-in" multiple accept="image/*" onchange="handlePhotos(event)" style="color:#C9A84C;font-size:13px">
+    <div style="color:#6B6B6B;font-size:11px;margin-top:8px">JPG, PNG, WEBP &mdash; mehrere auf einmal / multiple at once</div>
   </div>
   <div class="photo-grid" id="photo-grid"></div>
   <div style="margin-top:16px">
-    <div class="sub-lbl">Foto-Beschriftungen (optional, erscheinen als Caption)</div>
+    <div class="sub-lbl">Foto-Beschriftungen &mdash; Photo captions (optional)</div>
     <div id="caption-wrap"></div>
   </div>
 </div>
 
+<!-- 05 LAGE -->
 <div id="sec-lage" style="display:none">
-  <div class="sec-title">Lage</div><div class="sec-sub">Lagebeschreibung</div>
-  <div class="field"><label>Titel Lageseite</label><input id="f-lage-title" placeholder="Standort &amp; Markt"></div>
-  <div class="field"><label>Besonderheiten (f&uuml;r KI)</label><input id="f-li" placeholder="Brandenburg, 70km Berlin, ländlich, Pendlerlage..."></div>
-  <button class="btn-ai" id="btn-lage" onclick="genLage()">&#x2726; Mit KI generieren</button>
-  <div class="field"><label>Lage-Text</label><textarea id="f-lage" style="min-height:140px" placeholder="KI generieren oder direkt schreiben..."></textarea></div>
-  <div class="field"><label>Lage-Tags (getrennt durch |)</label><input id="f-lage-tags" placeholder="Lage ruhig, Brandenburg|Berlin ca. 70 km|Segment bezahlbar"></div>
-  <div class="field"><label>Hinweis-Text (optional, erscheint in goldener Box)</label><input id="f-lage-hint" placeholder="Genaue Anschrift wird vor Vermarktungsstart bestätigt."></div>
+  <div class="sec-title">Lage</div>
+  <div class="sec-sub">Lagebeschreibung &mdash; Location description</div>
+  <div class="field">
+    <div class="field-labels"><span class="field-de">Titel der Lageseite</span><span class="field-en">Title of location page</span></div>
+    <input id="f-lage-title" placeholder="z.B. Standort &amp; Markt">
+  </div>
+  <div class="field">
+    <div class="field-labels"><span class="field-de">Stichworte f&uuml;r KI</span><span class="field-en">Keywords for AI generation</span></div>
+    <input id="f-li" placeholder="z.B. Brandenburg, 70km Berlin, ruhig, Pendlerlage">
+  </div>
+  <button class="btn-ai" id="btn-lage" onclick="genLage()">&#x2726; Mit KI generieren &mdash; Generate with AI</button>
+  <div class="field">
+    <div class="field-labels"><span class="field-de">Lage-Text</span><span class="field-en">Location description text</span></div>
+    <textarea id="f-lage" style="min-height:130px" placeholder="KI generieren oder direkt schreiben..."></textarea>
+  </div>
+  <div class="field">
+    <div class="field-labels"><span class="field-de">Lage-Tags (getrennt durch |)</span><span class="field-en">Location tags (separated by |)</span></div>
+    <input id="f-lage-tags" placeholder="Lage ruhig, Brandenburg|Berlin ca. 70 km|Natur">
+  </div>
+  <div class="field">
+    <div class="field-labels"><span class="field-de">Hinweis-Text (goldene Box)</span><span class="field-en">Notice text (gold box)</span></div>
+    <input id="f-lage-hint" placeholder="z.B. Genaue Anschrift wird vor Vermarktungsstart best&auml;tigt.">
+  </div>
 </div>
 
+<!-- 06 MARKT -->
 <div id="sec-markt" style="display:none">
-  <div class="sec-title">Markteinsch&auml;tzung</div><div class="sec-sub">Preisquellen und Empfehlung</div>
-  <div class="sub-lbl">3 Kennzahlen oben</div>
-  <div class="g3">
-    <div class="field"><label>Kennzahl 1</label><input id="f-kz1" placeholder="~832 EUR"></div>
-    <div class="field"><label>Label 1</label><input id="f-kz1l" placeholder="EINSTIEG JE M2 WOHNFLAECHE"></div>
-  </div>
-  <div class="g3">
-    <div class="field"><label>Kennzahl 2</label><input id="f-kz2" placeholder="39.600 EUR"></div>
-    <div class="field"><label>Label 2</label><input id="f-kz2l" placeholder="POTENZIAL-NETTOKALTMIETE P.A."></div>
-  </div>
-  <div class="g3">
-    <div class="field"><label>Kennzahl 3</label><input id="f-kz3" placeholder="~7,9 %"></div>
-    <div class="field"><label>Label 3</label><input id="f-kz3l" placeholder="BRUTTO-POTENZIALRENDITE"></div>
-  </div>
-  <div class="divider"></div>
-  <div class="sub-lbl">Tabelle Kaufpreisszenarien (optional)</div>
-  <div id="table-wrap"></div>
-  <button onclick="addTableRow()" style="background:none;border:1px solid #2a2820;color:#6B6B6B;padding:8px 16px;border-radius:8px;cursor:pointer;font-size:12px;margin-bottom:16px">+ Zeile hinzuf&uuml;gen</button>
-  <div class="divider"></div>
-  <div class="field"><label>Empfohlener Vermarktungspreis</label><input id="f-ep" placeholder="499.000 EUR"></div>
-  <div class="field"><label>Vorläufiger Rahmen / Korridor</label><input id="f-ko" placeholder="ca. 480.000 - 530.000 EUR"></div>
+  <div class="sec-title">Markteinsch&#228;tzung</div>
+  <div class="sec-sub">Preise und Kennzahlen &mdash; Prices and key figures</div>
+
+  <div class="sub-lbl">3 Kennzahlen &mdash; 3 Key figures (optional)</div>
   <div class="g2">
-    <div class="field"><label>Faktor / Zusatzinfo links</label><input id="f-fakt" placeholder="ca. 12,6-fach"></div>
-    <div class="field"><label>Strategie rechts</label><input id="f-strat" placeholder="gezielte Kapitalanleger-Ansprache"></div>
+    <div class="field">
+      <div class="field-labels"><span class="field-de">Kennzahl 1</span><span class="field-en">Key figure 1 value</span></div>
+      <input id="f-kz1" placeholder="z.B. ~832 EUR">
+    </div>
+    <div class="field">
+      <div class="field-labels"><span class="field-de">Label 1</span><span class="field-en">Key figure 1 label</span></div>
+      <input id="f-kz1l" placeholder="EINSTIEG JE M2 WOHNFLAECHE">
+    </div>
   </div>
-  <div class="field"><label>Wertbetreiber-Hinweis (golden)</label><textarea id="f-wert" style="min-height:60px" placeholder="Wertbetreiber: niedriger Einstieg je m², skalierbarer Bestand..."></textarea></div>
-  <div class="field"><label>Disclaimer-Text</label><textarea id="f-disc" style="min-height:60px" placeholder="Hinweis: Die Miete ist ein Potenzialwert bei Vollvermietung..."></textarea></div>
+  <div class="g2">
+    <div class="field">
+      <div class="field-labels"><span class="field-de">Kennzahl 2</span><span class="field-en">Key figure 2 value</span></div>
+      <input id="f-kz2" placeholder="z.B. 39.600 EUR">
+    </div>
+    <div class="field">
+      <div class="field-labels"><span class="field-de">Label 2</span><span class="field-en">Key figure 2 label</span></div>
+      <input id="f-kz2l" placeholder="POTENZIAL-NETTOKALTMIETE P.A.">
+    </div>
+  </div>
+  <div class="g2">
+    <div class="field">
+      <div class="field-labels"><span class="field-de">Kennzahl 3</span><span class="field-en">Key figure 3 value</span></div>
+      <input id="f-kz3" placeholder="z.B. ~7,9 %">
+    </div>
+    <div class="field">
+      <div class="field-labels"><span class="field-de">Label 3</span><span class="field-en">Key figure 3 label</span></div>
+      <input id="f-kz3l" placeholder="BRUTTO-POTENZIALRENDITE">
+    </div>
+  </div>
+
+  <div class="divider"></div>
+  <div class="sub-lbl">Tabelle Kaufpreisszenarien &mdash; Price scenarios table (optional)</div>
+  <div id="table-wrap"></div>
+  <button onclick="addTableRow()" style="background:none;border:1px solid #2a2820;color:#6B6B6B;padding:7px 14px;border-radius:7px;cursor:pointer;font-size:11px;margin-bottom:14px;font-family:Inter,sans-serif">+ Zeile hinzuf&uuml;gen / Add row</button>
+
+  <div class="divider"></div>
+
+  <div class="field">
+    <div class="field-labels"><span class="field-de">Empfohlener Vermarktungspreis</span><span class="field-en">Recommended listing price</span></div>
+    <input id="f-ep" placeholder="z.B. 499.000 EUR">
+  </div>
+  <div class="field">
+    <div class="field-labels"><span class="field-de">Vorl&auml;ufiger Korridor</span><span class="field-en">Preliminary price range</span></div>
+    <input id="f-ko" placeholder="z.B. ca. 480.000 - 530.000 EUR">
+  </div>
+  <div class="g2">
+    <div class="field">
+      <div class="field-labels"><span class="field-de">Faktor / Zusatzinfo links</span><span class="field-en">Factor / info left side</span></div>
+      <input id="f-fakt" placeholder="z.B. ca. 12,6-fach">
+    </div>
+    <div class="field">
+      <div class="field-labels"><span class="field-de">Strategie rechts</span><span class="field-en">Strategy right side</span></div>
+      <input id="f-strat" placeholder="z.B. gezielte Kapitalanleger-Ansprache">
+    </div>
+  </div>
+  <div class="field">
+    <div class="field-labels"><span class="field-de">Wertbetreiber-Text (goldene Box)</span><span class="field-en">Value driver text (gold box)</span></div>
+    <textarea id="f-wert" style="min-height:60px" placeholder="z.B. Wertbetreiber: niedriger Einstieg je m&sup2;..."></textarea>
+  </div>
+  <div class="field">
+    <div class="field-labels"><span class="field-de">Disclaimer / Hinweis</span><span class="field-en">Disclaimer text</span></div>
+    <textarea id="f-disc" style="min-height:60px" placeholder="z.B. Hinweis: Die Miete ist ein Potenzialwert..."></textarea>
+  </div>
 </div>
 
 </main></div>
@@ -201,33 +335,30 @@ const LOGO_B64='iVBORw0KGgoAAAANSUhEUgAAAMgAAABzCAYAAADdVU0oAAAqE0lEQVR42u19d5xU
 let tableRows=[];
 
 (function(){
-  // Highlights
   let h='';
-  for(let i=0;i<6;i++) h+=`<div class="g2" style="margin-bottom:10px">
-    <div class="field"><div class="hl-num">Highlight ${i+1} Titel</div><input id="ht${i}" placeholder="z.B. 12 Wohneinheiten"></div>
-    <div class="field"><div class="hl-num">Detail</div><input id="hd${i}" placeholder="Skalierbarer Bestand"></div>
+  for(let i=0;i<6;i++) h+=`<div class="g2" style="margin-bottom:8px">
+    <div class="field"><div class="hl-num">HIGHLIGHT ${i+1} &mdash; TITEL / TITLE</div><input id="ht${i}" placeholder="z.B. 12 Wohneinheiten / 12 residential units"></div>
+    <div class="field"><div class="hl-num">DETAIL / DESCRIPTION</div><input id="hd${i}" placeholder="z.B. Skalierbarer Bestand"></div>
   </div>`;
   document.getElementById('hl-wrap').innerHTML=h;
-  // Captions
   let c='';
-  for(let i=0;i<12;i++) c+=`<div class="field" style="margin-bottom:8px">
-    <input id="cap${i}" placeholder="Foto ${i+1} Beschriftung (optional)" style="font-size:12px;padding:8px 12px">
+  for(let i=0;i<12;i++) c+=`<div class="field" style="margin-bottom:6px">
+    <div class="field-labels"><span class="field-de">Foto ${i+1}</span><span class="field-en">Photo ${i+1} caption</span></div>
+    <input id="cap${i}" placeholder="z.B. Hausansicht &mdash; charmante Fassade / House view" style="font-size:12px;padding:8px 12px">
   </div>`;
   document.getElementById('caption-wrap').innerHTML=c;
-  // One default table row
   addTableRow();
 })();
 
 function addTableRow(){
-  const i=tableRows.length;
-  tableRows.push(i);
+  const i=tableRows.length;tableRows.push(i);
   const w=document.getElementById('table-wrap');
   const d=document.createElement('div');
-  d.className='g3';d.style.marginBottom='8px';d.id='trow'+i;
+  d.className='g3';d.style.marginBottom='8px';
   d.innerHTML=`
-    <div class="field"><input id="tp${i}" placeholder="499.000 EUR" style="font-size:13px;padding:10px 14px"></div>
-    <div class="field"><input id="tf${i}" placeholder="12,6-fach" style="font-size:13px;padding:10px 14px"></div>
-    <div class="field"><input id="tr${i}" placeholder="7,9 %" style="font-size:13px;padding:10px 14px"></div>`;
+    <div class="field"><div class="field-labels"><span class="field-de">Kaufpreis</span><span class="field-en">Price</span></div><input id="tp${i}" placeholder="499.000 EUR" style="font-size:12px;padding:9px 12px"></div>
+    <div class="field"><div class="field-labels"><span class="field-de">Faktor</span><span class="field-en">Factor / multiple</span></div><input id="tf${i}" placeholder="12,6-fach" style="font-size:12px;padding:9px 12px"></div>
+    <div class="field"><div class="field-labels"><span class="field-de">Rendite</span><span class="field-en">Yield / return</span></div><input id="tr${i}" placeholder="7,9 %" style="font-size:12px;padding:9px 12px"></div>`;
   w.appendChild(d);
 }
 
@@ -273,18 +404,13 @@ function gf(){
     typ:gv('f-typ'),ref:gv('f-ref'),titel:gv('f-titel'),sub:gv('f-sub'),
     adr:gv('f-adr'),fl:gv('f-fl'),gr:gv('f-gr'),zi:gv('f-zi'),
     bj:gv('f-bj'),hz:gv('f-hz'),vf:gv('f-vf'),zustand:gv('f-zustand'),au:gv('f-au'),
-    ag:gv('f-ag'),em:gv('f-em'),tel:gv('f-tel'),empf:gv('f-empf'),
-    footref:gv('f-footref'),
+    ag:gv('f-ag'),em:gv('f-em'),tel:gv('f-tel'),empf:gv('f-empf'),footref:gv('f-footref'),
     letter:gv('f-letter'),quote:gv('f-quote'),
     descTitle:gv('f-desc-title'),desc:gv('f-desc'),
     lageTitle:gv('f-lage-title'),li:gv('f-li'),lage:gv('f-lage'),
-    lageTags:gv('f-lage-tags').split('|').filter(t=>t.trim()),
-    lageHint:gv('f-lage-hint'),
-    kz1:gv('f-kz1'),kz1l:gv('f-kz1l'),
-    kz2:gv('f-kz2'),kz2l:gv('f-kz2l'),
-    kz3:gv('f-kz3'),kz3l:gv('f-kz3l'),
-    trows,ep:gv('f-ep'),ko:gv('f-ko'),
-    fakt:gv('f-fakt'),strat:gv('f-strat'),
+    lageTags:gv('f-lage-tags').split('|').filter(t=>t.trim()),lageHint:gv('f-lage-hint'),
+    kz1:gv('f-kz1'),kz1l:gv('f-kz1l'),kz2:gv('f-kz2'),kz2l:gv('f-kz2l'),kz3:gv('f-kz3'),kz3l:gv('f-kz3l'),
+    trows,ep:gv('f-ep'),ko:gv('f-ko'),fakt:gv('f-fakt'),strat:gv('f-strat'),
     wert:gv('f-wert'),disc:gv('f-disc'),
     hl:Array.from({length:6},(_,i)=>({t:gv('ht'+i),d:gv('hd'+i)})).filter(h=>h.t||h.d),
     caps
@@ -300,164 +426,19 @@ async function callAI(prompt){
 }
 async function genLetter(){
   const b=document.getElementById('btn-letter');b.disabled=true;st('KI schreibt...');
-  try{const f=gf();const t=await callAI('Du bist '+f.ag+' von Amili Immobilien Berlin. Schreibe einen persoenlichen empathischen Brief auf Deutsch an '+(f.empf||'die Eigentuemerin')+' fuer das Objekt '+f.titel+' in '+f.adr+'. Beschreibe wie Amili dieses Objekt vermarkten wird. Ton: professionell, warm, vertrauenswuerdig. Max 200 Woerter. Nur Fliestext, keine Anrede.');document.getElementById('f-letter').value=t;st('Fertig','ok');}
+  try{const f=gf();const t=await callAI('Du bist '+f.ag+' von Amili Immobilien Berlin. Schreibe einen persoenlichen empathischen Brief auf Deutsch an '+(f.empf||'die Eigentuemerin')+' fuer das Objekt '+f.titel+' in '+f.adr+'. Beschreibe wie Amili dieses Objekt vermarkten wird. Max 200 Woerter. Nur Fliestext.');document.getElementById('f-letter').value=t;st('Fertig','ok');}
   catch(e){st(e.message,'err');}b.disabled=false;
 }
 async function genDesc(){
   const b=document.getElementById('btn-desc');b.disabled=true;st('KI schreibt...');
-  try{const f=gf();const t=await callAI('Schreibe eine professionelle Objektbeschreibung auf Deutsch fuer '+f.typ+' in '+f.adr+'. Wohnflaeche '+f.fl+'m2, Grundstueck '+f.gr+'m2, Einheiten/Zimmer '+f.zi+', Zustand '+f.zustand+', Besonderheiten '+f.au+'. Ton: sachlich aber einladend. Max 180 Woerter. Nur Fliestext.');document.getElementById('f-desc').value=t;st('Fertig','ok');}
+  try{const f=gf();const t=await callAI('Schreibe eine professionelle Objektbeschreibung auf Deutsch fuer '+f.typ+' in '+f.adr+' Wohnflaeche '+f.fl+'m2 Grundstueck '+f.gr+'m2 Zimmer/Einheiten '+f.zi+' Zustand '+f.zustand+' Besonderheiten '+f.au+'. Max 180 Woerter. Nur Fliestext.');document.getElementById('f-desc').value=t;st('Fertig','ok');}
   catch(e){st(e.message,'err');}b.disabled=false;
 }
 async function genLage(){
   const b=document.getElementById('btn-lage');b.disabled=true;st('KI schreibt...');
-  try{const f=gf();const t=await callAI('Schreibe einen Lage-Text auf Deutsch fuer Objekt in '+f.adr+'. Besonderheiten: '+(f.li||'ruhige Lage')+'. Beschreibe Standortqualitaeten fuer Kaeufer/Investoren. Max 120 Woerter. Nur Fliestext.');document.getElementById('f-lage').value=t;st('Fertig','ok');}
+  try{const f=gf();const t=await callAI('Schreibe einen Lage-Text auf Deutsch fuer Objekt in '+f.adr+' Besonderheiten: '+(f.li||'ruhige Lage')+'. Max 120 Woerter. Nur Fliestext.');document.getElementById('f-lage').value=t;st('Fertig','ok');}
   catch(e){st(e.message,'err');}b.disabled=false;
 }
-
-// ─── PDF Generation - Exact Falkenhagen Style ───
-
-async function importFromFile(e){
-  const file = e.target.files[0];
-  if(!file) return;
-  
-  const status = document.getElementById('import-status');
-  const zone = document.getElementById('pdf-drop-zone');
-  
-  status.textContent = 'Wird verarbeitet...';
-  status.style.color = '#C9A84C';
-  
-  try{
-    const isPDF = file.name.toLowerCase().endsWith('.pdf');
-    
-    if(isPDF){
-      // Extract text using FileReader + send as text prompt
-      status.textContent = 'PDF wird gelesen...';
-      
-      const arrayBuffer = await file.arrayBuffer();
-      
-      // Load PDF.js
-      if(!window.pdfjsLib){
-        await new Promise((res,rej)=>{
-          const s=document.createElement('script');
-          s.src='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
-          s.onload=()=>{
-            window.pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-            setTimeout(res, 500);
-          };
-          s.onerror=()=>rej(new Error('PDF.js konnte nicht geladen werden'));
-          document.head.appendChild(s);
-        });
-      }
-      
-      status.textContent = 'Text wird extrahiert...';
-      
-      const pdf = await window.pdfjsLib.getDocument({data: arrayBuffer}).promise;
-      let text = '';
-      const maxPages = Math.min(pdf.numPages, 9);
-      
-      for(let i=1; i<=maxPages; i++){
-        const page = await pdf.getPage(i);
-        const tc = await page.getTextContent();
-        const pageText = tc.items.map(item=>item.str).join(' ');
-        text += 'Seite ' + i + ':\n' + pageText + '\n\n';
-      }
-      
-      if(!text.trim() || text.length < 50){
-        throw new Error('Kein lesbarer Text gefunden. Bitte ein Foto des Dokuments hochladen.');
-      }
-      
-      status.textContent = 'KI analysiert (' + text.length + ' Zeichen)...';
-      
-      const r = await fetch('/api/extract', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({textContent: text, isPDF: true})
-      });
-      
-      if(!r.ok){
-        const err = await r.json().catch(()=>({error:'Unbekannter Fehler'}));
-        throw new Error(err.error || 'Server Fehler ' + r.status);
-      }
-      
-      const data = await r.json();
-      fillForm(data);
-      status.textContent = 'Formular wurde ausgefullt!';
-      status.style.color = '#5cb85c';
-      
-    } else {
-      // Image
-      status.textContent = 'Bild wird komprimiert...';
-      
-      const b64 = await new Promise((res,rej)=>{
-        const img = new Image();
-        img.onload = () => {
-          const canvas = document.createElement('canvas');
-          let w=img.width, h=img.height;
-          if(w>1400){h=Math.round(h*1400/w);w=1400;}
-          if(h>1400){w=Math.round(w*1400/h);h=1400;}
-          canvas.width=w; canvas.height=h;
-          canvas.getContext('2d').drawImage(img,0,0,w,h);
-          res(canvas.toDataURL('image/jpeg',0.82).split(',')[1]);
-        };
-        img.onerror = rej;
-        const fr = new FileReader();
-        fr.onload = ev => { img.src = ev.target.result; };
-        fr.onerror = rej;
-        fr.readAsDataURL(file);
-      });
-      
-      status.textContent = 'KI analysiert Bild...';
-      
-      const r = await fetch('/api/extract', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({b64, mediaType: 'image/jpeg', isPDF: false})
-      });
-      
-      if(!r.ok){
-        const err = await r.json().catch(()=>({error:'Unbekannter Fehler'}));
-        throw new Error(err.error || 'Server Fehler ' + r.status);
-      }
-      
-      const data = await r.json();
-      fillForm(data);
-      status.textContent = 'Formular wurde ausgefullt!';
-      status.style.color = '#5cb85c';
-    }
-    
-    document.getElementById('f-titel').scrollIntoView({behavior:'smooth', block:'center'});
-    
-  } catch(err){
-    console.error('Import error:', err);
-    status.textContent = 'Fehler: ' + err.message;
-    status.style.color = '#e05c5c';
-  }
-}
-
-function fillForm(data){
-  const s=(id,val)=>{const el=document.getElementById(id);if(el&&val!==undefined&&val!=='')el.value=val;};
-  s('f-typ',data.typ);s('f-ref',data.ref);s('f-titel',data.titel);s('f-sub',data.sub);
-  s('f-adr',data.adr);s('f-fl',data.fl);s('f-gr',data.gr);s('f-zi',data.zi);
-  s('f-bj',data.bj);s('f-hz',data.hz);s('f-vf',data.vf);s('f-zustand',data.zustand);
-  s('f-au',data.au);s('f-empf',data.empf);s('f-footref',data.footref);
-  s('f-letter',data.letter);s('f-quote',data.quote);
-  s('f-desc-title',data.descTitle);s('f-desc',data.desc);
-  s('f-lage-title',data.lageTitle);s('f-lage',data.lage);
-  s('f-lage-tags',data.lageTags);s('f-lage-hint',data.lageHint);
-  s('f-ep',data.ep);s('f-ko',data.ko);s('f-fakt',data.fakt);s('f-strat',data.strat);
-  s('f-kz1',data.kz1);s('f-kz1l',data.kz1l);s('f-kz2',data.kz2);s('f-kz2l',data.kz2l);
-  s('f-kz3',data.kz3);s('f-kz3l',data.kz3l);s('f-wert',data.wert);s('f-disc',data.disc);
-  if(data.hl&&Array.isArray(data.hl)){
-    data.hl.slice(0,6).forEach((h,i)=>{s('ht'+i,h.t);s('hd'+i,h.d);});
-  }
-  if(data.trows&&Array.isArray(data.trows)&&data.trows.length>0){
-    data.trows.forEach((row,i)=>{
-      if(i>0)addTableRow();
-      setTimeout(()=>{s('tp'+i,row.p);s('tf'+i,row.f);s('tr'+i,row.r);},200);
-    });
-  }
-}
-
 
 async function generatePDF(){
   const btn=document.getElementById('btn-gen');btn.disabled=true;st('PDF wird erstellt...');
@@ -468,57 +449,35 @@ async function generatePDF(){
     const fR=await pdfDoc.embedFont(StandardFonts.Helvetica);
     const fB=await pdfDoc.embedFont(StandardFonts.HelveticaBold);
     const fI=await pdfDoc.embedFont(StandardFonts.HelveticaOblique);
-    const fBI=await pdfDoc.embedFont(StandardFonts.HelveticaBoldOblique);
 
-    // Exact colors from Falkenhagen PDF
-    const GOLD=rgb(0.741,0.624,0.275);    // #BD9F46
-    const DARK=rgb(0.153,0.141,0.118);    // #272418
-    const SLATE=rgb(0.42,0.40,0.36);      // #6B6660
+    const GOLD=rgb(0.741,0.624,0.275);
+    const DARK=rgb(0.153,0.141,0.118);
+    const SLATE=rgb(0.42,0.40,0.36);
     const WHITE=rgb(1,1,1);
-    const IVORY=rgb(0.98,0.973,0.957);    // #FAF8F4
-    const LGRAY=rgb(0.878,0.863,0.839);   // #E0DCD6
-    const NAVY=rgb(0.094,0.09,0.078);     // #18170F
-    const GOLD_BG=rgb(0.996,0.976,0.918); // #FEEF9EA light gold bg
-    const PW=595,PH=842;
-    const ML=42,MR=42,MT=50; // margins
+    const IVORY=rgb(0.98,0.973,0.957);
+    const LGRAY=rgb(0.878,0.863,0.839);
+    const NAVY=rgb(0.094,0.09,0.078);
+    const GOLDBG=rgb(0.996,0.980,0.930);
+    const PW=595,PH=842,ML=42,MR=42;
 
-    // Safe text
     function tx(page,text,x,y,size,font,color,maxW){
       let s=String(text||'');if(!s)return 0;
       if(maxW){while(s.length>1&&font.widthOfTextAtSize(s,size)>maxW)s=s.slice(0,-1);}
       try{page.drawText(s,{x,y,size,font,color:color||DARK});}catch(e){}
       return font.widthOfTextAtSize(s,size);
     }
-    // Wrap
     function wl(text,maxW,size,font){
       const words=String(text||'').split(' ');const lines=[];let cur='';
-      for(const w of words){
-        const t=cur?cur+' '+w:w;
-        if(font.widthOfTextAtSize(t,size)<=maxW){cur=t;}else{if(cur)lines.push(cur);cur=w;}
-      }
+      for(const w of words){const t=cur?cur+' '+w:w;if(font.widthOfTextAtSize(t,size)<=maxW){cur=t;}else{if(cur)lines.push(cur);cur=w;}}
       if(cur)lines.push(cur);return lines.length?lines:[''];
     }
-    // Draw multiline, returns y after last line
-    function ml_txt(page,text,x,y,size,font,color,maxW,lineH){
-      const lines=wl(text,maxW,size,font);
-      lines.forEach((l,i)=>tx(page,l,x,y-i*(lineH||size*1.4),size,font,color));
-      return y-lines.length*(lineH||size*1.4);
-    }
-    function fillRect(page,x,y,w,h,color,opacity){
-      try{page.drawRectangle({x,y:y-h,width:w,height:h,color,opacity:opacity||1});}catch(e){}
-    }
-    function strokeRect(page,x,y,w,h,color,lw){
-      try{page.drawRectangle({x,y:y-h,width:w,height:h,borderColor:color,borderWidth:lw||0.5,color:rgb(0,0,0),opacity:0});}catch(e){}
-    }
-    function hline(page,x1,y,x2,color,lw){
-      try{page.drawLine({start:{x:x1,y},end:{x:x2,y},thickness:lw||0.5,color:color||LGRAY});}catch(e){}
-    }
+    function fillR(page,x,y,w,h,color,op){try{page.drawRectangle({x,y:y-h,width:w,height:h,color,opacity:op||1});}catch(e){}}
+    function strokeR(page,x,y,w,h,color,lw){try{page.drawRectangle({x,y:y-h,width:w,height:h,borderColor:color,borderWidth:lw||0.5,color:rgb(0,0,0),opacity:0});}catch(e){}}
+    function hline(page,x1,y,x2,color,lw){try{page.drawLine({start:{x:x1,y},end:{x:x2,y},thickness:lw||0.5,color:color||LGRAY});}catch(e){}}
 
-    // Embed logo
     let logoImg=null;
     try{const b=Uint8Array.from(atob(LOGO_B64),c=>c.charCodeAt(0));logoImg=await pdfDoc.embedPng(b);}catch(e){}
 
-    // Embed photos
     const photos=[];
     for(let i=0;i<pP.length;i++){
       try{
@@ -531,583 +490,296 @@ async function generatePDF(){
       }catch(e){photos.push(null);}
     }
 
-    // ── HEADER (pages 2+) ── exact Falkenhagen style: logo left, section label right, line below
-    function drawHeader(page,sectionLabel){
-      // White strip top
-      fillRect(page,0,PH,PW,52,WHITE);
-      // Logo
-      if(logoImg){
-        const {width:lw,height:lh}=logoImg.scale(1);
-        const s=Math.min(38/lw,22/lh);
-        page.drawImage(logoImg,{x:ML,y:PH-36,width:lw*s,height:lh*s});
-      }
-      // Section label right - spaced caps
-      if(sectionLabel){
-        const sw=fR.widthOfTextAtSize(sectionLabel,7.5);
-        tx(page,sectionLabel,PW-MR-sw,PH-30,7.5,fR,SLATE);
-      }
-      // Divider line
+    function drawHdr(page,label){
+      fillR(page,0,PH,PW,52,WHITE);
+      if(logoImg){const {width:lw,height:lh}=logoImg.scale(1);const s=Math.min(38/lw,22/lh);page.drawImage(logoImg,{x:ML,y:PH-36,width:lw*s,height:lh*s});}
+      if(label){const sw=fR.widthOfTextAtSize(label,7.5);tx(page,label,PW-MR-sw,PH-30,7.5,fR,SLATE);}
       hline(page,ML,PH-48,PW-MR,LGRAY,0.5);
     }
-
-    // ── FOOTER ── exact Falkenhagen: "Amili Immobilien . Berlin & Brandenburg" left, "Vorab-Exposé . [ref]" right
-    function drawFooter(page){
+    function drawFtr(page){
       hline(page,ML,28,PW-MR,LGRAY,0.3);
-      tx(page,'Amili Immobilien . Berlin & Brandenburg',ML,12,7,fR,SLATE);
-      const fref='Vorab-Exposé . '+(f.footref||f.adr.split(',')[0]||'');
-      const fw=fB.widthOfTextAtSize(fref,7);
-      tx(page,fref,PW-MR-fw,12,7,fB,GOLD);
+      tx(page,'Amili Immobilien - Berlin & Brandenburg',ML,12,7,fR,SLATE);
+      const fref='Vorab-Expose - '+(f.footref||f.adr.split(',')[0]||'');
+      tx(page,fref,PW-MR-fB.widthOfTextAtSize(fref,7),12,7,fB,GOLD);
     }
 
-    // ════════════════════════════════════════
-    // PAGE 1 - COVER
-    // ════════════════════════════════════════
+    // PAGE 1 COVER
     const p1=pdfDoc.addPage([PW,PH]);
     const cp=photos[0];
-
     if(cp){
-      const isPortrait=cp.h>cp.w;
       const {width:iw,height:ih}=cp.img.scale(1);
-
+      const isPortrait=cp.h>cp.w;
       if(isPortrait){
-        // Portrait: scale to fill full page width, crop height if needed
-        const scale=PW/iw;
-        const dw=iw*scale,dh=ih*scale;
-        // Center vertically
-        const oy=(PH-dh)/2;
-        p1.drawImage(cp.img,{x:0,y:oy,width:dw,height:dh});
-        // Dark gradient overlay bottom 50%
-        fillRect(p1,0,PH*0.5,PW,PH*0.5,rgb(0,0,0),0.72);
+        const scale=PW/iw;const dw=iw*scale,dh=ih*scale;
+        p1.drawImage(cp.img,{x:0,y:(PH-dh)/2,width:dw,height:dh});
+        fillR(p1,0,PH*0.5,PW,PH*0.5,rgb(0,0,0),0.7);
       } else {
-        // Landscape: scale to fill full page - crop sides
-        const scaleH=PH/ih, scaleW=PW/iw;
-        const scale=Math.max(scaleH,scaleW);
-        const dw=iw*scale,dh=ih*scale;
-        const ox=(PW-dw)/2,oy=(PH-dh)/2;
-        p1.drawImage(cp.img,{x:ox,y:oy,width:dw,height:dh});
-        // Dark overlay bottom 55%
-        fillRect(p1,0,PH*0.45,PW,PH*0.45,rgb(0,0,0),0.68);
+        const scale=Math.max(PW/iw,PH/ih);const dw=iw*scale,dh=ih*scale;
+        p1.drawImage(cp.img,{x:(PW-dw)/2,y:(PH-dh)/2,width:dw,height:dh});
+        fillR(p1,0,PH*0.45,PW,PH*0.45,rgb(0,0,0),0.68);
       }
-    } else {
-      fillRect(p1,0,PH,PW,PH,rgb(0.15,0.14,0.12));
-    }
+    } else {fillR(p1,0,PH,PW,PH,NAVY);}
 
-    // Logo box top-left (white rounded box)
-    fillRect(p1,ML,PH-14,70,52,WHITE,0.96);
-    if(logoImg){
-      const {width:lw,height:lh}=logoImg.scale(1);
-      const s=Math.min(56/lw,34/lh);
-      p1.drawImage(logoImg,{x:ML+6,y:PH-48,width:lw*s,height:lh*s});
-    }
+    fillR(p1,ML,PH-14,72,52,WHITE,0.96);
+    if(logoImg){const {width:lw,height:lh}=logoImg.scale(1);const s=Math.min(58/lw,36/lh);p1.drawImage(logoImg,{x:ML+6,y:PH-48,width:lw*s,height:lh*s});}
 
-    // Section label top - spaced
-    const secLbl='V O R A B - E X P O S É   .   '+(f.sub?f.sub.toUpperCase().slice(0,40):'A N G E B O T');
-    tx(p1,secLbl,ML,PH*0.42+18,6.5,fR,GOLD,PW-ML*2);
+    const secLbl='V O R A B - E X P O S E  -  '+(f.sub?f.sub.toUpperCase().slice(0,40):'A N G E B O T');
+    tx(p1,secLbl,ML,PH*0.43+18,6.5,fR,GOLD,PW-ML*2);
+    const tlines=wl(f.titel||'Ein Zuhause.',PW-ML*2,44,fB);
+    let ty=PH*0.43;
+    tlines.slice(0,3).forEach(l=>{tx(p1,l,ML,ty,44,fB,WHITE);ty-=52;});
+    const subl=wl(f.sub||'',PW-ML*2,11,fR);
+    subl.slice(0,2).forEach((l,i)=>tx(p1,l,ML,ty-i*15,11,fR,WHITE));
+    ty-=subl.length*15+10;
+    const adrTxt='- '+(f.adr||'');
+    fillR(p1,ML,ty+20,Math.min(fR.widthOfTextAtSize(adrTxt,9)+22,PW-ML*2),22,rgb(1,1,1),0.14);
+    tx(p1,adrTxt,ML+10,ty+8,9,fR,WHITE,PW-ML*2-14);
+    hline(p1,ML,36,PW-MR,WHITE,0.2);
+    tx(p1,'Erstellt fur '+(f.empf||''),ML,18,8,fR,rgb(0.75,0.75,0.75));
+    tx(p1,'Vorab-Aufnahmen - professionelle Fotos nach Beauftragung',PW-MR-fR.widthOfTextAtSize('Vorab-Aufnahmen - professionelle Fotos nach Beauftragung',7.5),18,7.5,fR,rgb(0.6,0.6,0.6));
 
-    // Big title - Garamond-like large
-    const titleLines=wl(f.titel||'Ein Zuhause.',PW-ML*2-20,46,fB);
-    let ty=PH*0.42-10;
-    titleLines.slice(0,3).forEach(l=>{tx(p1,l,ML,ty,46,fB,WHITE);ty-=54;});
-
-    // Subtitle
-    const subLines=wl(f.sub||'',PW-ML*2,12,fR);
-    subLines.slice(0,2).forEach((l,i)=>{tx(p1,l,ML,ty-i*16,12,fR,WHITE);});
-    ty-=subLines.length*16+10;
-
-    // Address badge - rounded pill
-    const adrText='.  '+(f.adr||'');
-    const adrW=Math.min(fR.widthOfTextAtSize(adrText,9)+24,PW-ML*2);
-    fillRect(p1,ML,ty+20,adrW,22,rgb(1,1,1),0.15);
-    strokeRect(p1,ML,ty+20,adrW,22,rgb(1,1,1),0.3);
-    tx(p1,adrText,ML+10,ty+8,9,fR,WHITE,adrW-14);
-
-    // Bottom footer line
-    hline(p1,ML,36,PW-MR,WHITE,0.25);
-    tx(p1,'Erstellt für ',ML,18,8,fR,rgb(0.75,0.75,0.75));
-    const efX=ML+fR.widthOfTextAtSize('Erstellt für ',8);
-    tx(p1,f.empf||'',efX,18,8,fB,WHITE);
-    const vorabTxt='Vorab-Aufnahmen - professionelle Fotos folgen nach Beauftragung';
-    const vw=fR.widthOfTextAtSize(vorabTxt,7.5);
-    tx(p1,vorabTxt,PW-MR-vw,18,7.5,fR,rgb(0.65,0.65,0.65));
-
-    // ════════════════════════════════════════
-    // PAGE 2 - ANSCHREIBEN
-    // ════════════════════════════════════════
+    // PAGE 2 ANSCHREIBEN
     const p2=pdfDoc.addPage([PW,PH]);
-    drawHeader(p2,'P E R S Ö N L I C H   F Ü R   S I E');
+    drawHdr(p2,'P E R S O N L I C H  F U R  S I E');
     let y=PH-70;
-
-    // Section number
-    tx(p2,'01',ML,y,8,fI,GOLD); hline(p2,ML+16,y+3,PW-MR,LGRAY,0.4); y-=20;
-
-    // Title
-    const ltitle='Schön, dass wir uns kennenlernen dürfen.';
-    const ltLines=wl(ltitle,PW-ML*2,28,fB);
-    ltLines.forEach(l=>{tx(p2,l,ML,y,28,fB,DARK);y-=34;}); y-=6;
-
-    // Salutation
-    tx(p2,'Sehr geehrte'+(f.empf?' '+f.empf:''),ML,y,11,fR,SLATE); y-=18;
-
-    // Letter body - split around quote
-    const ltext=f.letter||'[Anschreiben noch nicht generiert]';
-    const llines=wl(ltext,PW-ML*2,10,fR);
+    tx(p2,'01',ML,y,8,fI,GOLD);hline(p2,ML+16,y+3,PW-MR,LGRAY,0.4);y-=20;
+    const ltLines=wl('Schon, dass wir uns kennenlernen durfen.',PW-ML*2,27,fB);
+    ltLines.forEach(l=>{tx(p2,l,ML,y,27,fB,DARK);y-=33;});y-=4;
+    tx(p2,'Sehr geehrte'+(f.empf?' '+f.empf:''),ML,y,11,fR,SLATE);y-=16;
+    const llines=wl(f.letter||'[Anschreiben noch nicht generiert]',PW-ML*2,10,fR);
     const half=Math.floor(llines.length*0.45);
-
-    llines.slice(0,half).forEach(l=>{tx(p2,l,ML,y,10,fR,DARK,PW-ML*2);y-=14;}); y-=8;
-
-    // Quote box - exact Falkenhagen style: ivory bg, gold left border, italic
+    llines.slice(0,half).forEach(l=>{tx(p2,l,ML,y,10,fR,DARK,PW-ML*2);y-=13;});y-=6;
     const qtext=f.quote||'Deshalb gehen wir in Vorleistung. Diese Mappe ist unser erster Beweis - noch bevor Sie etwas unterschreiben.';
-    const qlines=wl('"'+qtext+'"',PW-ML*2-32,10,fI);
-    const qH=qlines.length*14+24;
-    fillRect(p2,ML,y+8,PW-ML*2,qH,IVORY);
-    fillRect(p2,ML,y+8,3,qH,GOLD);
-    qlines.forEach((l,i)=>{tx(p2,l,ML+14,y-i*14,10,fI,SLATE);});
-    y-=qH+10;
+    const qlines=wl(qtext,PW-ML*2-28,10,fI);
+    const qH=qlines.length*13+22;
+    fillR(p2,ML,y+8,PW-ML*2,qH,IVORY);fillR(p2,ML,y+8,3,qH,GOLD);
+    qlines.forEach((l,i)=>tx(p2,l,ML+12,y-i*13,10,fI,SLATE));y-=qH+8;
+    llines.slice(half).forEach(l=>{tx(p2,l,ML,y,10,fR,DARK,PW-ML*2);y-=13;});y-=14;
+    tx(p2,f.ag||'Saru Siva',ML,y,16,fB,DARK);y-=14;
+    tx(p2,'Ihr personlicher Ansprechpartner - Amili Immobilien',ML,y,9,fR,SLATE);
+    drawFtr(p2);
 
-    llines.slice(half).forEach(l=>{tx(p2,l,ML,y,10,fR,DARK,PW-ML*2);y-=14;}); y-=16;
-
-    // Signature
-    tx(p2,f.ag||'Saru Siva',ML,y,17,fB,DARK); y-=20;
-    tx(p2,'Ihr persönlicher Ansprechpartner . Amili Immobilien',ML,y,9,fR,SLATE);
-    drawFooter(p2);
-
-    // ════════════════════════════════════════
-    // PAGE 3 - DAS OBJEKT
-    // ════════════════════════════════════════
+    // PAGE 3 OBJEKT
     const p3=pdfDoc.addPage([PW,PH]);
-    drawHeader(p3,'D A S   O B J E K T');
+    drawHdr(p3,'D A S  O B J E K T');
     y=PH-70;
-
-    tx(p3,'02',ML,y,8,fI,GOLD); hline(p3,ML+16,y+3,PW-MR,LGRAY,0.4); y-=20;
-    tx(p3,'Das Objekt auf einen Blick',ML,y,28,fB,DARK); y-=36;
-
-    const introText=f.sub||'Ein Objekt in ruhiger Lage.';
-    const introLines=wl(introText,PW-ML*2,10,fR);
-    introLines.forEach(l=>{tx(p3,l,ML,y,10,fR,DARK,PW-ML*2);y-=14;}); y-=12;
-
-    // Specs grid - 2 cols, exact Falkenhagen card style
+    tx(p3,'02',ML,y,8,fI,GOLD);hline(p3,ML+16,y+3,PW-MR,LGRAY,0.4);y-=20;
+    tx(p3,'Das Objekt auf einen Blick',ML,y,27,fB,DARK);y-=34;
+    const il=wl(f.sub||'Ein Objekt in ruhiger Lage.',PW-ML*2,10,fR);
+    il.forEach(l=>{tx(p3,l,ML,y,10,fR,DARK,PW-ML*2);y-=13;});y-=10;
     const specs=[
-      ['O B J E K T A R T',f.typ,''],
-      ['W O H N E I N H E I T E N',f.zi,''],
-      ['W O H N F L Ä C H E',f.fl?'ca. '+f.fl+' m²':'',''],
-      ['G R U N D S T Ü C K',f.gr?'ca. '+f.gr+' m²':'',''],
-      ['Z U S T A N D',f.zustand||f.hz,''],
-      ['H E I Z U N G',f.hz,''],
-      ['A U S S E N A N L A G E',f.au,''],
-      ['V E R F Ü G B A R K E I T',f.vf,''],
+      ['O B J E K T A R T',f.typ],['B A U J A H R',f.bj],
+      ['Z I M M E R  /  E I N H E I T E N',f.zi],['W O H N F L A E C H E',f.fl?'ca. '+f.fl+' m2':''],
+      ['G R U N D S T U E C K',f.gr?'ca. '+f.gr+' m2':''],['H E I Z U N G',f.hz],
+      ['Z U S T A N D',f.zustand],['V E R F U E G B A R K E I T',f.vf],
     ].filter(s=>s[1]);
-
-    const cols=2;
-    const cardW=(PW-ML*2-10)/cols;
-    const cardH=62;
-    specs.forEach(([label,val,sub],i)=>{
-      const col=i%cols,row=Math.floor(i/cols);
-      const cx=ML+col*(cardW+10);
-      const cy=y-row*cardH;
-      // Card border
-      strokeRect(p3,cx,cy,cardW,cardH-4,LGRAY,0.5);
-      // Label - gold spaced caps
-      tx(p3,label,cx+12,cy-14,6.5,fB,GOLD,cardW-20);
-      // Value - large
-      tx(p3,String(val||'-').slice(0,22),cx+12,cy-34,18,fB,DARK,cardW-20);
-      if(sub)tx(p3,sub,cx+12,cy-50,8,fR,SLATE,cardW-20);
+    const cw=(PW-ML*2-10)/2,ch=60;
+    specs.forEach(([k,v],i)=>{
+      const col=i%2,row=Math.floor(i/2),cx=ML+col*(cw+10),cy2=y-row*ch;
+      strokeR(p3,cx,cy2,cw,ch-4,LGRAY,0.5);
+      tx(p3,k,cx+10,cy2-12,6.5,fB,GOLD,cw-18);
+      tx(p3,String(v||'-').slice(0,24),cx+10,cy2-30,17,fB,DARK,cw-18);
     });
-    y-=Math.ceil(specs.length/cols)*cardH+16;
+    y-=Math.ceil(specs.length/2)*ch+10;
+    const hint='Hinweis: Angaben beruhen auf Informationen der Eigentumerseite. Flachen werden im Zuge der Beauftragung bestatigt.';
+    const hlines=wl(hint,PW-ML*2-20,7.5,fR);
+    const hH=hlines.length*11+14;
+    fillR(p3,ML,y,PW-ML*2,hH,GOLDBG);strokeR(p3,ML,y,PW-ML*2,hH,GOLD,0.4);
+    tx(p3,'Hinweis: ',ML+8,y-9,7.5,fB,GOLD);
+    hlines.forEach((l,i)=>tx(p3,i===0?l.replace('Hinweis: ',''):l,ML+8+(i===0?fB.widthOfTextAtSize('Hinweis: ',7.5):0),y-9-i*11,7.5,fR,SLATE,PW-ML*2-20));
+    drawFtr(p3);
 
-    // Hinweis box
-    if(y>60){
-      const hint='Hinweis: Angaben beruhen auf Informationen der Eigentümerseite. Wohn- und Grundstücksflächen werden im Zuge der Beauftragung final bestätigt. Energieausweis folgt nach Beauftragung.';
-      const hlines=wl(hint,PW-ML*2-24,7.5,fR);
-      const hH=hlines.length*11+16;
-      fillRect(p3,ML,y,PW-ML*2,hH,GOLD_BG);
-      strokeRect(p3,ML,y,PW-ML*2,hH,GOLD,0.4);
-      tx(p3,'Hinweis: ',ML+10,y-10,7.5,fB,GOLD);
-      const hw=fB.widthOfTextAtSize('Hinweis: ',7.5);
-      hlines.forEach((l,i)=>tx(p3,i===0?l.replace('Hinweis: ',''):l,ML+10+(i===0?hw:0),y-10-i*11,7.5,fR,SLATE,PW-ML*2-24));
-    }
-    drawFooter(p3);
-
-    // ════════════════════════════════════════
-    // PAGE 4 - BESCHREIBUNG
-    // ════════════════════════════════════════
+    // PAGE 4 BESCHREIBUNG
     const p4=pdfDoc.addPage([PW,PH]);
-    drawHeader(p4,'B E S C H R E I B U N G');
+    drawHdr(p4,'B E S C H R E I B U N G');
     y=PH-70;
-
-    tx(p4,'03',ML,y,8,fI,GOLD); hline(p4,ML+16,y+3,PW-MR,LGRAY,0.4); y-=20;
-    tx(p4,f.descTitle||'Ein Haus mit Herz und Geschichte',ML,y,28,fB,DARK); y-=36;
-
-    const descLines=wl(f.desc||'[Beschreibung noch nicht generiert]',PW-ML*2,10,fR);
-    descLines.forEach(l=>{tx(p4,l,ML,y,10,fR,DARK,PW-ML*2);y-=14;}); y-=16;
-
-    // Divider with star
-    tx(p4,'*',ML,y,10,fR,GOLD); hline(p4,ML+14,y+4,PW-MR,LGRAY,0.3); y-=20;
-    tx(p4,'Die Highlights',ML,y,18,fR,DARK); y-=26;
-
-    // Highlights 2-col list style (exact Falkenhagen)
-    const hlColW=(PW-ML*2-20)/2;
+    tx(p4,'03',ML,y,8,fI,GOLD);hline(p4,ML+16,y+3,PW-MR,LGRAY,0.4);y-=20;
+    tx(p4,f.descTitle||'Ein Haus mit Herz und Geschichte',ML,y,27,fB,DARK);y-=34;
+    const dl=wl(f.desc||'[Beschreibung noch nicht generiert]',PW-ML*2,10,fR);
+    dl.forEach(l=>{tx(p4,l,ML,y,10,fR,DARK,PW-ML*2);y-=13;});y-=14;
+    fillR(p4,ML,y,6,1,GOLD);hline(p4,ML+8,y+1,PW-MR,LGRAY,0.3);y-=16;
+    tx(p4,'Die Highlights',ML,y,17,fR,DARK);y-=22;
+    const hlW=(PW-ML*2-18)/2;
     f.hl.forEach((h,i)=>{
-      const col=i%2,row=Math.floor(i/2);
-      const hx=ML+col*(hlColW+20);
-      const hy=y-row*52;
-      // Small icon placeholder area + bold title + text
-      hline(p4,hx,hy+4,hx+hlColW,LGRAY,0.3);
-      tx(p4,String(h.t||''),hx,hy-10,9.5,fB,DARK,hlColW-5);
-      const dls=wl(String(h.d||''),hlColW-5,9,fR);
-      dls.slice(0,2).forEach((l,j)=>tx(p4,l,hx,hy-22-j*12,9,fR,SLATE));
+      const col=i%2,row=Math.floor(i/2),hx=ML+col*(hlW+18),hy=y-row*50;
+      hline(p4,hx,hy+2,hx+hlW,LGRAY,0.3);
+      tx(p4,String(h.t||''),hx,hy-11,9.5,fB,DARK,hlW-4);
+      const dls=wl(String(h.d||''),hlW-4,9,fR);
+      dls.slice(0,2).forEach((l,j)=>tx(p4,l,hx,hy-23-j*12,9,fR,SLATE));
     });
-    drawFooter(p4);
+    drawFtr(p4);
 
-    // ════════════════════════════════════════
-    // PAGES 5-6 - FOTOS (exact Falkenhagen layout)
-    // 1 large + 2 small on page 5
-    // 6 in 3x2 grid on page 6
-    // ════════════════════════════════════════
-    const restPhotos=photos.slice(1).filter(Boolean);
-
-    if(restPhotos.length>0){
+    // PAGES PHOTOS
+    const rest=photos.slice(1).filter(Boolean);
+    if(rest.length>0){
       const p5=pdfDoc.addPage([PW,PH]);
-      drawHeader(p5,'E I N D R Ü C K E   I');
+      drawHdr(p5,'E I N D R U E C K E  I');
       y=PH-70;
-
-      tx(p5,'04',ML,y,8,fI,GOLD); hline(p5,ML+16,y+3,PW-MR,LGRAY,0.4); y-=20;
-      tx(p5,'Eindrücke vom Objekt',ML,y,28,fB,DARK); y-=12;
-      tx(p5,'Vorab-Aufnahmen . Professionelle Fotos folgen nach Beauftragung',ML,y,8,fR,SLATE); y-=14;
-
-      // Photo 1 (large, full width)
-      if(restPhotos[0]){
-        const ph=restPhotos[0];
-        const {width:iw,height:ih}=ph.img.scale(1);
-        const imgW=PW-ML*2;
-        const scale=Math.min(imgW/iw,190/ih);
+      tx(p5,'04',ML,y,8,fI,GOLD);hline(p5,ML+16,y+3,PW-MR,LGRAY,0.4);y-=20;
+      tx(p5,'Eindruecke vom Objekt',ML,y,27,fB,DARK);y-=10;
+      tx(p5,'Vorab-Aufnahmen - Professionelle Fotos folgen nach Beauftragung',ML,y,8,fR,SLATE);y-=12;
+      if(rest[0]){
+        const ph=rest[0];const {width:iw,height:ih}=ph.img.scale(1);
+        const imgW=PW-ML*2;const scale=Math.min(imgW/iw,185/ih);
         const dw=iw*scale,dh=ih*scale;
         p5.drawImage(ph.img,{x:ML+(imgW-dw)/2,y:y-dh,width:dw,height:dh});
-        // Caption overlay bottom-left
-        const cap0=f.caps[1]||'';
-        if(cap0){
-          fillRect(p5,ML,y-dh+22,Math.min(fB.widthOfTextAtSize(cap0,8)+20,imgW),20,rgb(0,0,0),0.6);
-          tx(p5,cap0,ML+8,y-dh+10,8,fB,WHITE,imgW-20);
-        }
+        const cap=f.caps[1]||'';
+        if(cap){fillR(p5,ML,y-dh+20,Math.min(fB.widthOfTextAtSize(cap,8)+18,dw),18,rgb(0,0,0),0.6);tx(p5,cap,ML+8,y-dh+9,8,fB,WHITE,dw-14);}
         y-=dh+8;
       }
-
-      // Photos 2 & 3 side by side
-      const pair1=[restPhotos[1],restPhotos[2]].filter(Boolean);
-      if(pair1.length>0){
-        const pw2=(PW-ML*2-8)/2;
-        const maxPH=Math.min(160,y-40);
-        pair1.forEach((ph,i)=>{
-          if(!ph)return;
-          const {width:iw,height:ih}=ph.img.scale(1);
-          const scale=Math.min(pw2/iw,maxPH/ih);
-          const dw=iw*scale,dh=ih*scale;
-          const px=ML+i*(pw2+8)+(pw2-dw)/2;
-          p5.drawImage(ph.img,{x:px,y:y-dh,width:dw,height:dh});
-          const cap=f.caps[i+2]||'';
-          if(cap){
-            fillRect(p5,px,y-dh+20,Math.min(fB.widthOfTextAtSize(cap,8)+16,dw),18,rgb(0,0,0),0.6);
-            tx(p5,cap,px+6,y-dh+9,8,fB,WHITE,dw-10);
-          }
-        });
-        y-=Math.max(...pair1.filter(Boolean).map(ph=>{
-          const {width:iw,height:ih}=ph.img.scale(1);
-          const scale=Math.min((PW-ML*2-8)/2/iw,maxPH/ih);
-          return ih*scale;
-        }))+8;
-      }
-
-      // Vorab note
-      if(y>40){
-        const noteW=fR.widthOfTextAtSize('Vorab-Aufnahmen . Professionelle Fotos folgen nach Beauftragung',8)+24;
-        fillRect(p5,ML,y,noteW,18,IVORY);
-        strokeRect(p5,ML,y,noteW,18,LGRAY,0.4);
-        tx(p5,'Vorab-Aufnahmen . Professionelle Fotos folgen nach Beauftragung',ML+10,y-5,8,fR,SLATE);
-      }
-      drawFooter(p5);
+      const pw2=(PW-ML*2-8)/2;
+      [rest[1],rest[2]].filter(Boolean).forEach((ph,i)=>{
+        const {width:iw,height:ih}=ph.img.scale(1);const scale=Math.min(pw2/iw,Math.min(155,y-40)/ih);
+        const dw=iw*scale,dh=ih*scale;const px=ML+i*(pw2+8)+(pw2-dw)/2;
+        p5.drawImage(ph.img,{x:px,y:y-dh,width:dw,height:dh});
+        const cap=f.caps[i+2]||'';
+        if(cap){fillR(p5,px,y-dh+18,Math.min(fB.widthOfTextAtSize(cap,8)+16,dw),16,rgb(0,0,0),0.6);tx(p5,cap,px+6,y-dh+7,8,fB,WHITE,dw-10);}
+      });
+      const noteW=fR.widthOfTextAtSize('Vorab-Aufnahmen - Professionelle Fotos nach Beauftragung',8)+20;
+      drawFtr(p5);
     }
-
-    // Page 6 - 6 photos in 2x3 grid with captions
-    if(restPhotos.length>3){
+    if(rest.length>3){
       const p6=pdfDoc.addPage([PW,PH]);
-      drawHeader(p6,'E I N D R Ü C K E   I I');
-      y=PH-60;
-
-      const noteW2=fR.widthOfTextAtSize('Vorab-Aufnahmen . Nach Beauftragung erfolgt eine professionelle Aufbereitung',8)+24;
-      fillRect(p6,ML,y,noteW2,18,IVORY);
-      strokeRect(p6,ML,y,noteW2,18,LGRAY,0.4);
-      tx(p6,'Vorab-Aufnahmen . Nach Beauftragung erfolgt eine professionelle Aufbereitung',ML+10,y-5,8,fR,SLATE);
-      y-=26;
-
-      const grid=restPhotos.slice(3,9);
+      drawHdr(p6,'E I N D R U E C K E  I I');
+      y=PH-65;
+      const noteW2=fR.widthOfTextAtSize('Vorab-Aufnahmen - Nach Beauftragung: professionelles Foto-Shooting',8)+20;
+      fillR(p6,ML,y,noteW2,16,IVORY);strokeR(p6,ML,y,noteW2,16,LGRAY,0.4);
+      tx(p6,'Vorab-Aufnahmen - Nach Beauftragung: professionelles Foto-Shooting',ML+8,y-5,8,fR,SLATE);y-=24;
       const gW=(PW-ML*2-8)/2;
-      const maxGH=Math.min(170,(y-40)/Math.ceil(grid.length/2)-8);
-
+      const grid=rest.slice(3,9);
       for(let i=0;i<grid.length;i+=2){
-        const row=[grid[i],grid[i+1]];
+        const pair=[grid[i],grid[i+1]].filter(Boolean);
         let rowH=0;
-        row.forEach((ph,col)=>{
-          if(!ph)return;
-          const {width:iw,height:ih}=ph.img.scale(1);
-          const scale=Math.min(gW/iw,maxGH/ih);
-          const dw=iw*scale,dh=ih*scale;
-          rowH=Math.max(rowH,dh);
+        pair.forEach((ph,col)=>{
+          const {width:iw,height:ih}=ph.img.scale(1);const scale=Math.min(gW/iw,155/ih);
+          const dw=iw*scale,dh=ih*scale;rowH=Math.max(rowH,dh);
           const px=ML+col*(gW+8)+(gW-dw)/2;
           p6.drawImage(ph.img,{x:px,y:y-dh,width:dw,height:dh});
           const cap=f.caps[4+i+col]||'';
-          if(cap){
-            fillRect(p6,px,y-dh+20,Math.min(fB.widthOfTextAtSize(cap,8)+16,dw),18,rgb(0,0,0),0.6);
-            tx(p6,cap,px+6,y-dh+9,8,fB,WHITE,dw-10);
-          }
+          if(cap){fillR(p6,px,y-dh+18,Math.min(fB.widthOfTextAtSize(cap,8)+16,dw),16,rgb(0,0,0),0.6);tx(p6,cap,px+6,y-dh+7,8,fB,WHITE,dw-10);}
         });
-        y-=rowH+8;
-        if(y<50)break;
+        y-=rowH+8;if(y<50)break;
       }
-      drawFooter(p6);
+      drawFtr(p6);
     }
 
-    // ════════════════════════════════════════
-    // PAGE - LAGE (exact Falkenhagen)
-    // ════════════════════════════════════════
+    // PAGE LAGE
     const pL=pdfDoc.addPage([PW,PH]);
-    drawHeader(pL,'D I E   L A G E');
+    drawHdr(pL,'D I E  L A G E');
     y=PH-70;
-
-    tx(pL,'05',ML,y,8,fI,GOLD); hline(pL,ML+16,y+3,PW-MR,LGRAY,0.4); y-=20;
-    tx(pL,f.lageTitle||'Standort & Markt',ML,y,28,fB,DARK); y-=14;
-
-    // Photo full width with caption overlay
+    tx(pL,'05',ML,y,8,fI,GOLD);hline(pL,ML+16,y+3,PW-MR,LGRAY,0.4);y-=20;
+    tx(pL,f.lageTitle||'Standort & Markt',ML,y,27,fB,DARK);y-=12;
     if(photos[0]){
-      const ph=photos[0];
-      const {width:iw,height:ih}=ph.img.scale(1);
-      const imgW=PW-ML*2;
-      const scale=Math.min(imgW/iw,200/ih);
+      const ph=photos[0];const {width:iw,height:ih}=ph.img.scale(1);
+      const imgW=PW-ML*2;const scale=Math.min(imgW/iw,195/ih);
       const dw=iw*scale,dh=ih*scale;
       pL.drawImage(ph.img,{x:ML+(imgW-dw)/2,y:y-dh,width:dw,height:dh});
-      // Caption bottom of photo
-      const capText=f.caps[0]||f.adr||'';
-      if(capText){
-        const capW=Math.min(fB.widthOfTextAtSize(capText,8.5)+24,dw);
-        fillRect(pL,ML+(imgW-dw)/2,y-dh+22,capW,20,rgb(0,0,0),0.65);
-        tx(pL,capText,ML+(imgW-dw)/2+10,y-dh+9,8.5,fB,WHITE,capW-14);
-      }
-      y-=dh+14;
+      const cap=f.caps[0]||f.adr||'';
+      if(cap){fillR(pL,ML+(imgW-dw)/2,y-dh+22,Math.min(fB.widthOfTextAtSize(cap,8.5)+22,dw),20,rgb(0,0,0),0.65);tx(pL,cap,ML+(imgW-dw)/2+9,y-dh+9,8.5,fB,WHITE,dw-14);}
+      y-=dh+12;
     }
-
-    // Lage text
-    const lageLines=wl(f.lage||'[Lage-Text noch nicht generiert]',PW-ML*2,10,fR);
-    lageLines.forEach(l=>{tx(pL,l,ML,y,10,fR,DARK,PW-ML*2);y-=14;}); y-=12;
-
-    // Tags - pill style (exact Falkenhagen)
+    const lagl=wl(f.lage||'[Lage-Text noch nicht generiert]',PW-ML*2,10,fR);
+    lagl.forEach(l=>{tx(pL,l,ML,y,10,fR,DARK,PW-ML*2);y-=13;});y-=10;
     if(f.lageTags&&f.lageTags.length>0){
-      let tx2=ML;let ty=y;
+      let tx2=ML;
       f.lageTags.forEach(tag=>{
         const parts=tag.split(' ');const key=parts[0];const val=parts.slice(1).join(' ');
-        const tagW=fR.widthOfTextAtSize(key+' '+val,8)+24;
-        if(tx2+tagW>PW-MR){tx2=ML;ty-=22;}
-        strokeRect(pL,tx2,ty,tagW,18,LGRAY,0.6);
-        tx(pL,key,tx2+8,ty-5,8,fB,DARK);
-        tx(pL,' '+val,tx2+8+fB.widthOfTextAtSize(key,8),ty-5,8,fR,SLATE);
+        const tagW=fR.widthOfTextAtSize(key+' '+val,8)+22;
+        if(tx2+tagW>PW-MR){tx2=ML;y-=22;}
+        strokeR(pL,tx2,y,tagW,18,LGRAY,0.6);
+        tx(pL,key,tx2+8,y-5,8,fB,DARK);tx(pL,' '+val,tx2+8+fB.widthOfTextAtSize(key,8),y-5,8,fR,SLATE);
         tx2+=tagW+6;
-      });
-      y=ty-28;
+      });y-=26;
     }
-
-    // Hint box
     if(f.lageHint&&y>50){
-      const hl2=wl('Hinweis: '+f.lageHint,PW-ML*2-24,8,fR);
-      const hH=hl2.length*12+16;
-      strokeRect(pL,ML,y,PW-ML*2,hH,LGRAY,0.5);
-      tx(pL,'Hinweis: ',ML+10,y-10,8,fB,GOLD);
-      const hx=ML+10+fB.widthOfTextAtSize('Hinweis: ',8);
-      hl2.forEach((l,i)=>tx(pL,i===0?l.replace('Hinweis: ',''):l,i===0?hx:ML+10,y-10-i*12,8,fR,SLATE,PW-ML*2-24));
+      const hl2=wl('Hinweis: '+f.lageHint,PW-ML*2-20,8,fR);const hH=hl2.length*11+14;
+      strokeR(pL,ML,y,PW-ML*2,hH,LGRAY,0.5);
+      tx(pL,'Hinweis: ',ML+8,y-9,8,fB,GOLD);
+      hl2.forEach((l,i)=>tx(pL,i===0?l.replace('Hinweis: ',''):l,i===0?ML+8+fB.widthOfTextAtSize('Hinweis: ',8):ML+8,y-9-i*11,8,fR,SLATE,PW-ML*2-20));
     }
-    drawFooter(pL);
+    drawFtr(pL);
 
-    // ════════════════════════════════════════
-    // PAGE - MARKT (Rendite & Wert - exact Falkenhagen)
-    // ════════════════════════════════════════
+    // PAGE MARKT
     const pM=pdfDoc.addPage([PW,PH]);
-    drawHeader(pM,'R E N D I T E   &   W E R T');
+    drawHdr(pM,'R E N D I T E  &  W E R T');
     y=PH-70;
-
-    tx(pM,'06',ML,y,8,fI,GOLD); hline(pM,ML+16,y+3,PW-MR,LGRAY,0.4); y-=20;
-    tx(pM,'Rendite- & Wertbetrachtung',ML,y,28,fB,DARK); y-=14;
-
-    // Intro
-    const mIntro='Für Kapitalanleger zählt die Ertragslogik. Auf Basis des Mietpotenzials ergibt sich:';
-    tx(pM,mIntro,ML,y,10,fR,DARK,PW-ML*2); y-=18;
-
-    // 3 KPI boxes
-    const kzData=[
-      {v:f.kz1||'',l:f.kz1l||''},
-      {v:f.kz2||'',l:f.kz2l||''},
-      {v:f.kz3||'',l:f.kz3l||''},
-    ].filter(k=>k.v);
-
+    tx(pM,'06',ML,y,8,fI,GOLD);hline(pM,ML+16,y+3,PW-MR,LGRAY,0.4);y-=20;
+    tx(pM,'Rendite- & Wertbetrachtung',ML,y,27,fB,DARK);y-=12;
+    tx(pM,'Aktuelle Vergleichspreise und Kennzahlen (Q2 2026):',ML,y,10,fR,DARK,PW-ML*2);y-=16;
+    const kzData=[{v:f.kz1,l:f.kz1l},{v:f.kz2,l:f.kz2l},{v:f.kz3,l:f.kz3l}].filter(k=>k.v);
     if(kzData.length>0){
-      const kzW=(PW-ML*2-(kzData.length-1)*10)/kzData.length;
-      const kzH=58;
+      const kzW=(PW-ML*2-(kzData.length-1)*10)/kzData.length;const kzH=56;
       kzData.forEach(({v,l},i)=>{
-        const kx=ML+i*(kzW+10);
-        strokeRect(pM,kx,y,kzW,kzH,LGRAY,0.5);
-        // Value centered
-        const vw=fB.widthOfTextAtSize(v,16);
-        tx(pM,v,kx+(kzW-vw)/2,y-20,16,fB,DARK);
-        // Label centered, small spaced
-        const lw=fR.widthOfTextAtSize(l.slice(0,30),6.5);
-        tx(pM,l.slice(0,30),kx+(kzW-lw)/2,y-38,6.5,fR,SLATE);
-      });
-      y-=kzH+12;
-
-      // Method tags
-      const methodTags=['Verfahren: Ertragswert / Faktor','Stand: Q2 2026'];
-      let mtx=ML;
-      methodTags.forEach(tag=>{
-        const tw=fR.widthOfTextAtSize(tag,7.5)+18;
-        strokeRect(pM,mtx,y,tw,16,LGRAY,0.4);
-        tx(pM,tag,mtx+8,y-5,7.5,fR,SLATE);
-        mtx+=tw+6;
-      });
-      y-=26;
+        const kx=ML+i*(kzW+10);strokeR(pM,kx,y,kzW,kzH,LGRAY,0.5);
+        const vw=fB.widthOfTextAtSize(v,15);tx(pM,v,kx+(kzW-vw)/2,y-18,15,fB,DARK);
+        const lw2=fR.widthOfTextAtSize(String(l||'').slice(0,30),6.5);
+        tx(pM,String(l||'').slice(0,30),kx+(kzW-lw2)/2,y-36,6.5,fR,SLATE);
+      });y-=kzH+12;
     }
-
-    // Intro to table
     if(f.trows&&f.trows.length>0){
-      tx(pM,'Daraus ergibt sich je nach Kaufpreis folgender Faktor bzw. folgende Brutto-Potenzialrendite:',ML,y,10,fR,DARK,PW-ML*2);
-      y-=18;
-
-      // Table header
-      const cols3=[ML,ML+160,ML+300];
-      const colW3=[140,130,150];
-      ['KAUFPREIS','FAKTOR (POTENZIAL)','BRUTTO-POTENZIALRENDITE'].forEach((h,i)=>{
-        tx(pM,h,cols3[i],y,7,fB,GOLD);
-      });
-      y-=10; hline(pM,ML,y,PW-MR,LGRAY,0.4); y-=14;
-
+      tx(pM,'Kaufpreisszenarien:',ML,y,10,fR,DARK,PW-ML*2);y-=16;
+      const c3=[ML,ML+160,ML+300];
+      ['KAUFPREIS','FAKTOR','RENDITE'].forEach((h,i)=>tx(pM,h,c3[i],y,7,fB,GOLD));
+      y-=10;hline(pM,ML,y,PW-MR,LGRAY,0.4);y-=13;
       f.trows.forEach((row,i)=>{
-        const isBold=i===Math.floor(f.trows.length/2);
-        const ff=isBold?fB:fR;const fc=isBold?DARK:SLATE;
-        tx(pM,row.p,cols3[0],y,10,ff,fc);
-        tx(pM,row.f,cols3[1],y,10,ff,fc);
-        tx(pM,row.r,cols3[2],y,10,ff,fc);
-        hline(pM,ML,y-6,PW-MR,LGRAY,0.25);
-        y-=20;
-      });
-      y-=8;
+        const isBold=i===Math.floor(f.trows.length/2);const ff=isBold?fB:fR;const fc=isBold?DARK:SLATE;
+        tx(pM,row.p,c3[0],y,10,ff,fc);tx(pM,row.f,c3[1],y,10,ff,fc);tx(pM,row.r,c3[2],y,10,ff,fc);
+        hline(pM,ML,y-6,PW-MR,LGRAY,0.25);y-=20;
+      });y-=6;
     }
-
-    // Main price block - dark background (exact Falkenhagen)
-    const priceBlockH=100;
-    fillRect(pM,ML,y,PW-ML*2,priceBlockH,NAVY);
-    const priceLbl='E M P F O H L E N E R   V E R M A R K T U N G S P R E I S   .   E I N S T I E G';
-    tx(pM,priceLbl,ML+16,y-14,6.5,fR,GOLD,PW-ML*2-20);
-    tx(pM,f.ep||'-',ML+16,y-50,36,fB,WHITE,PW-ML*2-20);
-    if(f.ko)tx(pM,'Vorläufiger Rahmen: '+f.ko+' . finale Kaufpreisfindung nach gemeinsamer Objektaufnahme',ML+16,y-64,8,fR,rgb(0.7,0.7,0.7),PW-ML*2-20);
-    hline(pM,ML+16,y-70,PW-MR-16,rgb(0.25,0.25,0.25),0.3);
+    const pbH=98;fillR(pM,ML,y,PW-ML*2,pbH,NAVY);
+    tx(pM,'EMPFOHLENER VERMARKTUNGSPREIS',ML+14,y-14,6.5,fR,GOLD,PW-ML*2-20);
+    tx(pM,f.ep||'-',ML+14,y-48,34,fB,WHITE,PW-ML*2-20);
+    if(f.ko)tx(pM,'Vorlaufiger Rahmen: '+f.ko,ML+14,y-62,8,fR,rgb(0.65,0.65,0.65),PW-ML*2-20);
+    hline(pM,ML+14,y-68,PW-MR-14,rgb(0.22,0.22,0.22),0.3);
     if(f.fakt){
-      tx(pM,'FAKTOR (POTENZIAL)',ML+16,y-78,6.5,fR,SLATE);
-      tx(pM,'STRATEGIE',ML+180,y-78,6.5,fR,SLATE);
-      tx(pM,f.fakt,ML+16,y-92,12,fR,WHITE);
-      tx(pM,f.strat||'',ML+180,y-92,12,fR,WHITE,PW-ML-200);
+      tx(pM,'FAKTOR',ML+14,y-76,6.5,fR,SLATE);tx(pM,'STRATEGIE',PW/2+10,y-76,6.5,fR,SLATE);
+      tx(pM,f.fakt,ML+14,y-90,11,fR,WHITE);tx(pM,f.strat||'',PW/2+10,y-90,11,fR,WHITE,PW-ML-PW/2-20);
     }
-    y-=priceBlockH+12;
+    y-=pbH+10;
+    if(f.wert&&y>60){const wl2=wl('Wertbetreiber: '+f.wert,PW-ML*2-20,8,fR);const wH=wl2.length*11+14;fillR(pM,ML,y,PW-ML*2,wH,GOLDBG);strokeR(pM,ML,y,PW-ML*2,wH,GOLD,0.3);tx(pM,'Wertbetreiber: ',ML+8,y-9,8,fB,GOLD);wl2.forEach((l,i)=>tx(pM,i===0?l.replace('Wertbetreiber: ',''):l,i===0?ML+8+fB.widthOfTextAtSize('Wertbetreiber: ',8):ML+8,y-9-i*11,8,fR,SLATE,PW-ML*2-20));y-=wH+8;}
+    if(f.disc&&y>40){const dl2=wl('Hinweis: '+f.disc,PW-ML*2-20,7.5,fR);const dH=dl2.length*11+14;fillR(pM,ML,y,PW-ML*2,dH,IVORY);strokeR(pM,ML,y,PW-ML*2,dH,LGRAY,0.4);tx(pM,'Hinweis: ',ML+8,y-9,7.5,fB,GOLD);dl2.forEach((l,i)=>tx(pM,i===0?l.replace('Hinweis: ',''):l,i===0?ML+8+fB.widthOfTextAtSize('Hinweis: ',7.5):ML+8,y-9-i*11,7.5,fR,SLATE,PW-ML*2-20));}
+    drawFtr(pM);
 
-    // Wertbetreiber + Hinweis boxes
-    if(f.wert&&y>60){
-      const wlines=wl('Wertbetreiber: '+f.wert,PW-ML*2-24,8,fR);
-      const wH=wlines.length*11+16;
-      fillRect(pM,ML,y,PW-ML*2,wH,GOLD_BG);
-      strokeRect(pM,ML,y,PW-ML*2,wH,GOLD,0.3);
-      tx(pM,'Wertbetreiber: ',ML+10,y-10,8,fB,GOLD);
-      const wx=ML+10+fB.widthOfTextAtSize('Wertbetreiber: ',8);
-      wlines.forEach((l,i)=>tx(pM,i===0?l.replace('Wertbetreiber: ',''):l,i===0?wx:ML+10,y-10-i*11,8,fR,SLATE,PW-ML*2-24));
-      y-=wH+8;
-    }
-    if(f.disc&&y>40){
-      const dlines=wl('Hinweis: '+f.disc,PW-ML*2-24,7.5,fR);
-      const dH=dlines.length*11+16;
-      fillRect(pM,ML,y,PW-ML*2,dH,IVORY);
-      strokeRect(pM,ML,y,PW-ML*2,dH,LGRAY,0.4);
-      tx(pM,'Hinweis: ',ML+10,y-10,7.5,fB,GOLD);
-      const dx=ML+10+fB.widthOfTextAtSize('Hinweis: ',7.5);
-      dlines.forEach((l,i)=>tx(pM,i===0?l.replace('Hinweis: ',''):l,i===0?dx:ML+10,y-10-i*11,7.5,fR,SLATE,PW-ML*2-24));
-    }
-    drawFooter(pM);
-
-    // ════════════════════════════════════════
-    // PAGE - WARUM AMILI (exact Falkenhagen)
-    // ════════════════════════════════════════
+    // PAGE WARUM AMILI
     const pW=pdfDoc.addPage([PW,PH]);
-    drawHeader(pW,'W A R U M   A M I L I');
+    drawHdr(pW,'W A R U M  A M I L I');
     y=PH-70;
-
-    tx(pW,'07',ML,y,8,fI,GOLD); hline(pW,ML+16,y+3,PW-MR,LGRAY,0.4); y-=20;
-    tx(pW,'Was wir anders machen',ML,y,28,fB,DARK); y-=30;
-
-    // 4 service boxes 2x2
-    const svcs=[
-      ['Professionelle Fotos','Hochwertiges Shooting & Home-Staging statt Handy-Schnappschuss.'],
-      ['Echtes Exposé','Vollständige, emotionale Verkaufsmappe - wie diese hier.'],
-      ['Datenbasierter Preis','Marktgerechte Strategie ohne teure Preissenkungsschleifen.'],
-      ['Familien-Marketing','Gezielte Kampagnen auf Meta/Instagram & eigenes CRM.'],
-    ];
-    const sw=(PW-ML*2-10)/2,sh=62;
+    tx(pW,'07',ML,y,8,fI,GOLD);hline(pW,ML+16,y+3,PW-MR,LGRAY,0.4);y-=20;
+    tx(pW,'Was wir anders machen',ML,y,27,fB,DARK);y-=28;
+    const svcs=[['Professionelle Fotos','Hochwertiges Shooting & Home-Staging statt Handy-Schnappschuss.'],['Echtes Expose','Vollstandige, emotionale Verkaufsmappe - wie diese hier.'],['Datenbasierter Preis','Marktgerechte Strategie ohne teure Preissenkungsschleifen.'],['Familien-Marketing','Gezielte Kampagnen auf Meta/Instagram & eigenes CRM.']];
+    const sw=(PW-ML*2-10)/2,sh=60;
     svcs.forEach(([t,d],i)=>{
-      const col=i%2,row=Math.floor(i/2);
-      const bx=ML+col*(sw+10),by=y-row*sh;
-      strokeRect(pW,bx,by,sw,sh-4,LGRAY,0.4);
-      tx(pW,t,bx+12,by-18,9.5,fB,DARK,sw-20);
-      const dl2=wl(d,sw-22,8.5,fR);
-      dl2.slice(0,2).forEach((l,j)=>tx(pW,l,bx+12,by-32-j*11,8.5,fR,SLATE));
+      const col=i%2,row=Math.floor(i/2),bx=ML+col*(sw+10),by=y-row*sh;
+      strokeR(pW,bx,by,sw,sh-4,LGRAY,0.4);
+      tx(pW,t,bx+10,by-17,9.5,fB,DARK,sw-18);
+      const dl3=wl(d,sw-20,8.5,fR);dl3.slice(0,2).forEach((l,j)=>tx(pW,l,bx+10,by-29-j*11,8.5,fR,SLATE));
     });
-    y-=2*sh+20;
-
-    // Warum Amili note box (if exists)
-    // "So geht es weiter"
-    tx(pW,'So geht es weiter',ML,y,16,fR,DARK); y-=24;
-    [
-      ['1','Persönlicher Termin & Objektaufnahme','Einheiten, Zustand und Unterlagen gemeinsam erfassen.'],
-      ['2','Finale Kalkulation & Aufbereitung','Kaufpreis-/Renditerechnung, Profifotos, Energieausweis.'],
-      ['3','Gezielte Kapitalanleger-Vermarktung','Ansprache passender Investoren - diskret & strukturiert.'],
-      ['4','Qualifizierter Käufer','Solventer Investor und reibungslose Abwicklung.'],
-    ].forEach(([n,t,d])=>{
-      // Circle number
+    y-=2*sh+18;
+    tx(pW,'So geht es weiter',ML,y,15,fR,DARK);y-=22;
+    [['1','Personlicher Termin & Objektaufnahme','Einheiten, Zustand und Unterlagen gemeinsam erfassen.'],['2','Finale Kalkulation & Aufbereitung','Kaufpreis-/Renditerechnung, Profifotos, Energieausweis.'],['3','Gezielte Vermarktung','Ansprache passender Interessenten - diskret & strukturiert.'],['4','Der richtige Kaufer','Qualifizierte Interessenten und reibungslose Abwicklung.']].forEach(([n,t,d])=>{
       try{pW.drawCircle({x:ML+9,y:y+7,size:9,color:GOLD});}catch(e){}
-      tx(pW,n,ML+6,y+3.5,8,fB,WHITE);
-      tx(pW,t,ML+26,y+5,9.5,fB,DARK,PW-ML-60);
-      tx(pW,d,ML+26,y-7,8.5,fR,SLATE,PW-ML-60);
-      hline(pW,ML,y-16,PW-MR,LGRAY,0.25);
-      y-=32;
+      tx(pW,n,ML+6,y+3.5,8,fB,WHITE);tx(pW,t,ML+24,y+5,9.5,fB,DARK,PW-ML-58);
+      tx(pW,d,ML+24,y-7,8.5,fR,SLATE,PW-ML-58);hline(pW,ML,y-15,PW-MR,LGRAY,0.25);y-=30;
     });
-    y-=10;
-
-    // Contact box - exact Falkenhagen dark style
-    const ctH=80;
-    fillRect(pW,ML,y,PW-ML*2,ctH,IVORY);
-    strokeRect(pW,ML,y,PW-ML*2,ctH,LGRAY,0.5);
-    tx(pW,f.ag||'Saru Siva',ML+16,y-20,20,fB,DARK);
-    tx(pW,'Amili Immobilien . Ihr Ansprechpartner für den Verkauf',ML+16,y-36,9,fR,SLATE);
-    // Contact right side
-    const cx2=PW/2+10;
+    y-=8;
+    const ctH=76;fillR(pW,ML,y,PW-ML*2,ctH,IVORY);strokeR(pW,ML,y,PW-ML*2,ctH,LGRAY,0.5);
+    tx(pW,f.ag||'Saru Siva',ML+14,y-18,18,fB,DARK);
+    tx(pW,'Amili Immobilien - Ihr Ansprechpartner fur den Verkauf',ML+14,y-32,8.5,fR,SLATE);
+    const cx2=PW/2+8;
     [['E-Mail',f.em||'saru.siva@amili-immo.de'],['Telefon',f.tel||'+49 176 4929 4590'],['Web','www.amili-immo.de']].forEach(([l,v],i)=>{
-      tx(pW,l,cx2,y-18-i*16,8,fB,GOLD);
-      tx(pW,v,cx2+50,y-18-i*16,8,fR,DARK,PW-MR-cx2-50);
+      tx(pW,l,cx2,y-17-i*15,7.5,fB,GOLD);tx(pW,v,cx2+48,y-17-i*15,8,fR,DARK,PW-MR-cx2-48);
     });
-    y-=ctH+12;
+    y-=ctH+10;
+    const disc2='Vorab-Expose / unverbindliche Erstinformation. Alle Angaben beruhen auf Informationen der Eigentumerseite. Stand: '+new Date().toLocaleDateString('de-DE',{month:'long',year:'numeric'})+'.';
+    wl(disc2,PW-ML*2,7.5,fR).forEach((l,i)=>tx(pW,l,ML,y-i*10,7.5,fR,SLATE));
+    drawFtr(pW);
 
-    // Full disclaimer
-    const fullDisc='Vorab-Exposé / unverbindliche Erstinformation. Alle Angaben beruhen auf Informationen der Eigentümerseite und erheben keinen Anspruch auf Vollständigkeit oder Richtigkeit. Stand: '+new Date().toLocaleDateString('de-DE',{month:'long',year:'numeric'})+'.';
-    const discLines=wl(fullDisc,PW-ML*2,7.5,fR);
-    discLines.forEach((l,i)=>tx(pW,l,ML,y-i*10,7.5,fR,SLATE));
-    drawFooter(pW);
-
-    // Save
     const pdfBytes=await pdfDoc.save();
     const blob=new Blob([pdfBytes],{type:'application/pdf'});
     const url=URL.createObjectURL(blob);
-    const a=document.createElement('a');
-    a.href=url;
-    a.download='AMI-'+(f.adr||'expose').replace(/[^a-zA-Z0-9]/g,'-').slice(0,20)+'-'+f.ref+'.pdf';
+    const a=document.createElement('a');a.href=url;
+    a.download='AMI-'+String(f.adr||'expose').replace(/[^a-zA-Z0-9]/g,'-').slice(0,20)+'-'+f.ref+'.pdf';
     a.click();URL.revokeObjectURL(url);
     st('PDF gespeichert!','ok');
   }catch(e){console.error(e);st('Fehler: '+e.message,'err');}
