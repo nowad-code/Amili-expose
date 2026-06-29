@@ -319,112 +319,145 @@ async function genLage(){
 async function importFromFile(e){
   const file = e.target.files[0];
   if(!file) return;
+  
   const status = document.getElementById('import-status');
   const zone = document.getElementById('pdf-drop-zone');
-  status.textContent = 'Dokument wird gelesen...';
+  
+  status.textContent = 'Wird verarbeitet...';
   status.style.color = '#C9A84C';
-  zone.style.borderColor = '#C9A84C';
-
+  
   try{
-    const isPDF = file.type === 'application/pdf' || file.name.endsWith('.pdf');
-    let textContent = '';
-    let b64 = null;
-    let mediaType = '';
-
+    const isPDF = file.name.toLowerCase().endsWith('.pdf');
+    
     if(isPDF){
-      // Extract text from PDF using PDF.js
+      // Extract text using FileReader + send as text prompt
       status.textContent = 'PDF wird gelesen...';
+      
+      const arrayBuffer = await file.arrayBuffer();
+      
+      // Load PDF.js
       if(!window.pdfjsLib){
         await new Promise((res,rej)=>{
           const s=document.createElement('script');
           s.src='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
-          s.onload=res;s.onerror=rej;document.head.appendChild(s);
+          s.onload=()=>{
+            window.pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+            setTimeout(res, 500);
+          };
+          s.onerror=()=>rej(new Error('PDF.js konnte nicht geladen werden'));
+          document.head.appendChild(s);
         });
-        window.pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
       }
-      const arrayBuffer = await file.arrayBuffer();
+      
+      status.textContent = 'Text wird extrahiert...';
+      
       const pdf = await window.pdfjsLib.getDocument({data: arrayBuffer}).promise;
-      for(let i=1;i<=Math.min(pdf.numPages,10);i++){
+      let text = '';
+      const maxPages = Math.min(pdf.numPages, 9);
+      
+      for(let i=1; i<=maxPages; i++){
         const page = await pdf.getPage(i);
         const tc = await page.getTextContent();
-        textContent += tc.items.map(item=>item.str).join(' ') + '
-';
+        const pageText = tc.items.map(item=>item.str).join(' ');
+        text += 'Seite ' + i + ':\n' + pageText + '\n\n';
       }
-      if(!textContent.trim()){
-        throw new Error('Kein Text im PDF gefunden. Bitte als Foto/Screenshot hochladen.');
+      
+      if(!text.trim() || text.length < 50){
+        throw new Error('Kein lesbarer Text gefunden. Bitte ein Foto des Dokuments hochladen.');
       }
+      
+      status.textContent = 'KI analysiert (' + text.length + ' Zeichen)...';
+      
+      const r = await fetch('/api/extract', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({textContent: text, isPDF: true})
+      });
+      
+      if(!r.ok){
+        const err = await r.json().catch(()=>({error:'Unbekannter Fehler'}));
+        throw new Error(err.error || 'Server Fehler ' + r.status);
+      }
+      
+      const data = await r.json();
+      fillForm(data);
+      status.textContent = 'Formular wurde ausgefullt!';
+      status.style.color = '#5cb85c';
+      
     } else {
-      // Image: compress
+      // Image
       status.textContent = 'Bild wird komprimiert...';
-      b64 = await new Promise((res,rej)=>{
+      
+      const b64 = await new Promise((res,rej)=>{
         const img = new Image();
         img.onload = () => {
           const canvas = document.createElement('canvas');
-          let w=img.width,h=img.height;
-          const maxDim=1400;
-          if(w>maxDim||h>maxDim){if(w>h){h=Math.round(h*maxDim/w);w=maxDim;}else{w=Math.round(w*maxDim/h);h=maxDim;}}
-          canvas.width=w;canvas.height=h;
+          let w=img.width, h=img.height;
+          if(w>1400){h=Math.round(h*1400/w);w=1400;}
+          if(h>1400){w=Math.round(w*1400/h);h=1400;}
+          canvas.width=w; canvas.height=h;
           canvas.getContext('2d').drawImage(img,0,0,w,h);
-          res(canvas.toDataURL('image/jpeg',0.80).split(',')[1]);
+          res(canvas.toDataURL('image/jpeg',0.82).split(',')[1]);
         };
-        img.onerror=rej;
-        const fr=new FileReader();
-        fr.onload=ev=>{img.src=ev.target.result;};
-        fr.onerror=rej;
+        img.onerror = rej;
+        const fr = new FileReader();
+        fr.onload = ev => { img.src = ev.target.result; };
+        fr.onerror = rej;
         fr.readAsDataURL(file);
       });
-      mediaType='image/jpeg';
-    }
-
-    status.textContent = 'KI analysiert...';
-    const r = await fetch('/api/extract', {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({textContent, b64, mediaType, isPDF})
-    });
-    if(!r.ok){
-      const err=await r.json();
-      throw new Error(err.error||'API Fehler '+r.status);
-    }
-    const data = await r.json();
-
-    // Fill all form fields
-    const setVal=(id,val)=>{const el=document.getElementById(id);if(el&&val)el.value=val;};
-    setVal('f-typ',data.typ);setVal('f-ref',data.ref);setVal('f-titel',data.titel);
-    setVal('f-sub',data.sub);setVal('f-adr',data.adr);setVal('f-fl',data.fl);
-    setVal('f-gr',data.gr);setVal('f-zi',data.zi);setVal('f-bj',data.bj);
-    setVal('f-hz',data.hz);setVal('f-vf',data.vf);setVal('f-zustand',data.zustand);
-    setVal('f-au',data.au);setVal('f-empf',data.empf);setVal('f-footref',data.footref);
-    setVal('f-letter',data.letter);setVal('f-quote',data.quote);
-    setVal('f-desc-title',data.descTitle);setVal('f-desc',data.desc);
-    setVal('f-lage-title',data.lageTitle);setVal('f-lage',data.lage);
-    setVal('f-lage-tags',data.lageTags);setVal('f-lage-hint',data.lageHint);
-    setVal('f-ep',data.ep);setVal('f-ko',data.ko);
-    setVal('f-fakt',data.fakt);setVal('f-strat',data.strat);
-    setVal('f-kz1',data.kz1);setVal('f-kz1l',data.kz1l);
-    setVal('f-kz2',data.kz2);setVal('f-kz2l',data.kz2l);
-    setVal('f-kz3',data.kz3);setVal('f-kz3l',data.kz3l);
-    setVal('f-wert',data.wert);setVal('f-disc',data.disc);
-    if(data.hl&&Array.isArray(data.hl)){
-      data.hl.slice(0,6).forEach((h,i)=>{setVal('ht'+i,h.t);setVal('hd'+i,h.d);});
-    }
-    if(data.trows&&Array.isArray(data.trows)&&data.trows.length>0){
-      data.trows.forEach((row,i)=>{
-        if(i>0)addTableRow();
-        setTimeout(()=>{setVal('tp'+i,row.p);setVal('tf'+i,row.f);setVal('tr'+i,row.r);},150);
+      
+      status.textContent = 'KI analysiert Bild...';
+      
+      const r = await fetch('/api/extract', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({b64, mediaType: 'image/jpeg', isPDF: false})
       });
+      
+      if(!r.ok){
+        const err = await r.json().catch(()=>({error:'Unbekannter Fehler'}));
+        throw new Error(err.error || 'Server Fehler ' + r.status);
+      }
+      
+      const data = await r.json();
+      fillForm(data);
+      status.textContent = 'Formular wurde ausgefullt!';
+      status.style.color = '#5cb85c';
     }
-
-    status.textContent = 'Alle Felder ausgefüllt!';
-    status.style.color = '#5cb85c';
-    zone.style.borderColor = '#5cb85c';
-    document.getElementById('f-titel').scrollIntoView({behavior:'smooth',block:'center'});
+    
+    document.getElementById('f-titel').scrollIntoView({behavior:'smooth', block:'center'});
+    
   } catch(err){
+    console.error('Import error:', err);
     status.textContent = 'Fehler: ' + err.message;
     status.style.color = '#e05c5c';
-    zone.style.borderColor = '#e05c5c';
   }
 }
+
+function fillForm(data){
+  const s=(id,val)=>{const el=document.getElementById(id);if(el&&val!==undefined&&val!=='')el.value=val;};
+  s('f-typ',data.typ);s('f-ref',data.ref);s('f-titel',data.titel);s('f-sub',data.sub);
+  s('f-adr',data.adr);s('f-fl',data.fl);s('f-gr',data.gr);s('f-zi',data.zi);
+  s('f-bj',data.bj);s('f-hz',data.hz);s('f-vf',data.vf);s('f-zustand',data.zustand);
+  s('f-au',data.au);s('f-empf',data.empf);s('f-footref',data.footref);
+  s('f-letter',data.letter);s('f-quote',data.quote);
+  s('f-desc-title',data.descTitle);s('f-desc',data.desc);
+  s('f-lage-title',data.lageTitle);s('f-lage',data.lage);
+  s('f-lage-tags',data.lageTags);s('f-lage-hint',data.lageHint);
+  s('f-ep',data.ep);s('f-ko',data.ko);s('f-fakt',data.fakt);s('f-strat',data.strat);
+  s('f-kz1',data.kz1);s('f-kz1l',data.kz1l);s('f-kz2',data.kz2);s('f-kz2l',data.kz2l);
+  s('f-kz3',data.kz3);s('f-kz3l',data.kz3l);s('f-wert',data.wert);s('f-disc',data.disc);
+  if(data.hl&&Array.isArray(data.hl)){
+    data.hl.slice(0,6).forEach((h,i)=>{s('ht'+i,h.t);s('hd'+i,h.d);});
+  }
+  if(data.trows&&Array.isArray(data.trows)&&data.trows.length>0){
+    data.trows.forEach((row,i)=>{
+      if(i>0)addTableRow();
+      setTimeout(()=>{s('tp'+i,row.p);s('tf'+i,row.f);s('tr'+i,row.r);},200);
+    });
+  }
+}
+
 
 async function generatePDF(){
   const btn=document.getElementById('btn-gen');btn.disabled=true;st('PDF wird erstellt...');
